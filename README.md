@@ -15,3 +15,11 @@ bash codesketch start
 ``` bash
 bash codesketch stop
 ```
+
+## Tool
+
+The following tools are inclided:
+* [Jenkins](https://jenkins.io/)
+* [Artifactory](https://www.jfrog.com/open-source/)
+* [SonarQube](http://www.sonarqube.org/)
+* [Docker registry v2](https://docs.docker.com/registry/)
