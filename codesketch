@@ -1,0 +1,48 @@
+#!/usr/bin/env bash -e
+
+function start {
+	echo "Starting Codesketch in you local machine using docker compose ..."
+	docker network create codesketch
+	docker-compose -f docker-compose-codesketch.yml up -d --remove-orphans
+	echo "... waiting for Codesketch to start ..."
+	sleep 30s
+	docker-compose -f docker-compose-nginx.yml up -d
+	echo "Codesketch has started"
+	echo "Jenkins unlock token: $(docker exec jenkins-master cat /var/jenkins_home/secrets/initialAdminPassword)"
+	exit 0
+}
+
+function stop {
+	docker-compose -f docker-compose-codesketch.yml stop
+	docker-compose -f docker-compose-nginx.yml stop
+}
+
+function clean {
+	docker-compose -f docker-compose-codesketch.yml rm -f --all
+	docker-compose -f docker-compose-nginx.yml rm -f --all
+}
+
+function usage {
+  echo "Usage:"
+  echo "    ${0} -s <stop the platform>|-u <start the platfom>|-r <redeploy the platform>"
+  exit 1
+}
+
+case ${1} in
+  start|stop|clean)
+	case ${1} in
+      start)
+		start
+	  ;;
+      stop)
+		stop
+	  ;;
+	  clean)
+		clean
+	  ;;
+	  *)
+        echo "Invalid parameter(s) or option(s)."
+        usage
+      ;;
+    esac
+esac
