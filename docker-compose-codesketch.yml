@@ -73,6 +73,26 @@ services:
     networks:
       - codesketch
 
+  gitlab:
+    image: 'gitlab/gitlab-ce:latest'
+    restart: always
+    container_name: gitlab
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'http://gitlab:8080'
+        # Add any other gitlab.rb configuration here, each on its own line
+        # gitlab_rails['nginx_enabled'] = true;
+    expose:
+      - 8080
+    ports:
+      - '22:22'
+    volumes:
+      - 'gitlab-config:/etc/gitlab:Z'
+      - 'gitlab-logs:/var/log/gitlab:Z'
+      - 'gitlab-data:/var/opt/gitlab:Z'
+    networks:
+      - codesketch
+
 networks:
   codesketch:
     external: true
@@ -89,4 +109,10 @@ volumes:
   docker-registry:
     driver: local
   postgresql-data:
+    driver: local
+  gitlab-config:
+    driver: local
+  gitlab-data:
+    driver: local
+  gitlab-logs:
     driver: local

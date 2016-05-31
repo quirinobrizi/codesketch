@@ -1,8 +1,15 @@
 #!/usr/bin/env bash -e
 
+function config {
+	echo "Configuring Codesketch"
+	docker network create codesketch
+	docker-compose -f docker-compose-codesketch.yml pull
+	docker-compose -f docker-compose-nginx.yml pull
+	echo "... Codesketch configured"
+}
+
 function start {
 	echo "Starting Codesketch in you local machine using docker compose ..."
-	docker network create codesketch
 	docker-compose -f docker-compose-codesketch.yml up -d --remove-orphans
 	echo "... waiting for Codesketch to start ..."
 	sleep 30s
@@ -29,7 +36,7 @@ function usage {
 }
 
 case ${1} in
-  start|stop|clean)
+  start|stop|clean|config)
 	case ${1} in
       start)
 		start
@@ -39,6 +46,9 @@ case ${1} in
 	  ;;
 	  clean)
 		clean
+	  ;;
+	  config)
+		config
 	  ;;
 	  *)
         echo "Invalid parameter(s) or option(s)."
