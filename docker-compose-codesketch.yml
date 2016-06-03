@@ -79,11 +79,11 @@ services:
     container_name: gitlab
     environment:
       GITLAB_OMNIBUS_CONFIG: |
-        external_url 'http://gitlab:8080'
+        external_url 'http://gitlab:9000'
         # Add any other gitlab.rb configuration here, each on its own line
         # gitlab_rails['nginx_enabled'] = true;
     expose:
-      - 8080
+      - 9000
     ports:
       - '22:22'
     volumes:

@@ -15,7 +15,12 @@ function start {
 	sleep 30s
 	docker-compose -f docker-compose-nginx.yml up -d
 	echo "Codesketch has started"
-	echo "Jenkins unlock token: $(docker exec jenkins-master cat /var/jenkins_home/secrets/initialAdminPassword)"
+	TOKEN=$(docker exec jenkins-master cat /var/jenkins_home/secrets/initialAdminPassword)
+	# curl 'http://localhost/jenkins/j_acegi_security_check' \ 
+	#   -H 'Origin: http://localhost' -H 'Content-Type: application/x-www-form-urlencoded' \
+	#   -H 'Referer: http://localhost/jenkins/login?from=%2Fjenkins%2F' \
+	#   --data 'j_username=admin&j_password=$TOKEN&Jenkins-Crumb=$TOKEN&json=%7B%22j_username%22%3A+%22admin%22%2C+%22j_password%22%3A+%22$TOKEN%22%2C+%22Jenkins-Crumb%22%3A+%22d28a72490b2eb42ae2762b0fb1e4bdd8%22%7D' --compressed
+	echo "Jenkins unlock token: $TOKEN"
 	exit 0
 }
 
