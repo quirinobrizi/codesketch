@@ -1,6 +1,13 @@
 #!/usr/bin/env bash -e
 
-function config {
+function print_jenkins_token_if_present {
+	TOKEN=$(docker exec jenkins-master [ -f /var/jenkins_home/secrets/initialAdminPassword ] && cat /var/jenkins_home/secrets/initialAdminPassword)
+	if [ ! -z "$TOKEN" ]; then
+		echo "Jenkins unlock token: $TOKEN"
+	fi
+}
+
+function configure {
 	echo "Configuring Codesketch"
 	docker network create codesketch
 	docker-compose -f docker-compose-codesketch.yml pull
@@ -9,18 +16,14 @@ function config {
 }
 
 function start {
+	configure
 	echo "Starting Codesketch in you local machine using docker compose ..."
 	docker-compose -f docker-compose-codesketch.yml up -d --remove-orphans
 	echo "... waiting for Codesketch to start ..."
-	sleep 30s
+	sleep 60s
 	docker-compose -f docker-compose-nginx.yml up -d
 	echo "Codesketch has started"
-	TOKEN=$(docker exec jenkins-master cat /var/jenkins_home/secrets/initialAdminPassword)
-	# curl 'http://localhost/jenkins/j_acegi_security_check' \ 
-	#   -H 'Origin: http://localhost' -H 'Content-Type: application/x-www-form-urlencoded' \
-	#   -H 'Referer: http://localhost/jenkins/login?from=%2Fjenkins%2F' \
-	#   --data 'j_username=admin&j_password=$TOKEN&Jenkins-Crumb=$TOKEN&json=%7B%22j_username%22%3A+%22admin%22%2C+%22j_password%22%3A+%22$TOKEN%22%2C+%22Jenkins-Crumb%22%3A+%22d28a72490b2eb42ae2762b0fb1e4bdd8%22%7D' --compressed
-	echo "Jenkins unlock token: $TOKEN"
+	echo "!!! Tools setup may take some time !!!"
 	exit 0
 }
 
@@ -34,6 +37,10 @@ function clean {
 	docker-compose -f docker-compose-nginx.yml rm -f --all
 }
 
+function logs {
+	docker-compose -f docker-compose-codesketch.yml -f docker-compose-nginx.yml logs -f
+}
+
 function usage {
   echo "Usage:"
   echo "    ${0} -s <stop the platform>|-u <start the platfom>|-r <redeploy the platform>"
@@ -41,7 +48,7 @@ function usage {
 }
 
 case ${1} in
-  start|stop|clean|config)
+  start|stop|clean|config|logs)
 	case ${1} in
       start)
 		start
@@ -53,7 +60,10 @@ case ${1} in
 		clean
 	  ;;
 	  config)
-		config
+		configure
+	  ;;
+	  logs)
+		logs
 	  ;;
 	  *)
         echo "Invalid parameter(s) or option(s)."

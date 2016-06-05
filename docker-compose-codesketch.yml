@@ -5,7 +5,7 @@ services:
   jenkins-master:
     restart: always
     container_name: jenkins-master
-    image: jenkins:2.3-alpine
+    image: quirinobrizi/jenkins:2.3-alpine
     expose:
       - 8080
       - 50000
@@ -15,6 +15,20 @@ services:
       - jenkins:/var/jenkins_home
     networks:
       - codesketch
+
+  jenkins-slave:
+    restart: always
+    container_name: jenkins-slave-01
+    image: csanchez/jenkins-swarm-slave
+    command: "-master http://jenkins-master:8080/jenkins/ -username admin -password password -executors 2"
+    expose:
+      - 8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - jenkins-master
+    networks:
+      - codesketch 
 
   artifactory:
     restart: always
@@ -73,25 +87,25 @@ services:
     networks:
       - codesketch
 
-  gitlab:
-    image: 'gitlab/gitlab-ce:latest'
-    restart: always
-    container_name: gitlab
-    environment:
-      GITLAB_OMNIBUS_CONFIG: |
-        external_url 'http://gitlab:9000'
-        # Add any other gitlab.rb configuration here, each on its own line
-        # gitlab_rails['nginx_enabled'] = true;
-    expose:
-      - 9000
-    ports:
-      - '22:22'
-    volumes:
-      - 'gitlab-config:/etc/gitlab:Z'
-      - 'gitlab-logs:/var/log/gitlab:Z'
-      - 'gitlab-data:/var/opt/gitlab:Z'
-    networks:
-      - codesketch
+  # gitlab:
+  #   image: 'gitlab/gitlab-ce:latest'
+  #   restart: always
+  #   container_name: gitlab
+  #   environment:
+  #     GITLAB_OMNIBUS_CONFIG: |
+  #       external_url 'http://gitlab:9000'
+  #       # Add any other gitlab.rb configuration here, each on its own line
+  #       # gitlab_rails['nginx_enabled'] = true;
+  #   expose:
+  #     - 9000
+  #   ports:
+  #     - '22:22'
+  #   volumes:
+  #     - 'gitlab-config:/etc/gitlab:Z'
+  #     - 'gitlab-logs:/var/log/gitlab:Z'
+  #     - 'gitlab-data:/var/opt/gitlab:Z'
+  #   networks:
+  #     - codesketch
 
 networks:
   codesketch:

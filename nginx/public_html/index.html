@@ -4,18 +4,17 @@
 		<title>Codesketch</title>
 		<style type="text/css">
 			* { margin:0; padding:0; }
-			html,body {	background-color: white; margin: 0; padding: 0; border: 0; }
+						html,body {	background-color: white; margin: 0; padding: 0; border: 0; }
 			nav { width: 3%; height: 100%; display: inline-block; vertical-align: top; text-align: center; padding-top: 15px; }
 			nav > ul li { margin: 0 0 8px 0; cursor: pointer; }
 			nav > ul li img { height: 25px; }
-			.logo { 
-			    -webkit-transform: rotate(-90deg); -moz-transform: rotate(-90deg); -ms-transform: rotate(-90deg); -o-transform: rotate(-90deg); transform: rotate(-90deg);
-
+			.logo {
+			-webkit-transform: rotate(-90deg); -moz-transform: rotate(-90deg); -ms-transform: rotate(-90deg); -o-transform: rotate(-90deg); transform: rotate(-90deg);
 				/* also accepts left, right, top, bottom coordinates; not required, but a good idea for styling */
 				-webkit-transform-origin: 50% 50%; -moz-transform-origin: 50% 50%; -ms-transform-origin: 50% 50%; -o-transform-origin: 50% 50%;
 				transform-origin: 50% 50%;
 				/* Should be unset in IE9+ I think. */
-				filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3); 
+				filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
 				position: fixed; bottom: 50px; left: -18px;
 			}
 			#container { width: 97%; height: 100%; display: inline-block; position: absolute; border: none;}
@@ -23,42 +22,75 @@
 		<script type = "text/javascript" src = "http://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 		<script type = "text/javascript">
 			var display = function(tool) {
-				var target = window.location.protocol + "//" + window.location.host + "/" + (tool || 'jenkins') + '/';
-				$("#container").attr('src', target);
-				$('base').attr('href', target);
+				var target = window.location.protocol + "//" + window.location.host + "/" + (tool || 'jenkins') + '/',
+					container = $("#container");
+				container.attr('src', target);
+				container.attr('tool', tool);
 			};
-			var setup = function () {
-				display('jenkins');
-			};
-			var updateLinksIfGitlab = function(e) {
-				if($("#container").attr('src').endsWith('/gitlab/')){
-					var target = window.location.protocol + "//" + window.location.host + "/gitlab" + this.pathname;
-					$(this).attr('href', target);
-					setTimeout(contentLoaded, 1000);
-				}
-				return true;
-			};
-			var contentLoaded = function() {
-				$('#container').contents().find('a').click(updateLinksIfGitlab);
-			};
-			$(document).ready(setup);
+			// var updateLinksIfGitlab = function(e) {
+					// 	var container = $d("#container");
+					// 	// if(container.attr('src').endsWith('/gitlab/')){
+							// 		e.preventDefault();
+							// 		var target = window.location.protocol + "//" + window.location.host + "/gitlab" + this.pathname;
+							// 		container.load(target, contentLoaded);
+							// 		return false;
+					// 	// }
+					// 	// return true;
+			// };
+			// var contentLoaded = function() {
+					// 	$('#container').contents().find('a').click(updateLinksIfGitlab);
+			// };
+			// var onLoaded = function(container) {
+				// 	// var container = $("#container");
+				// 	container.contents().find('a').click(function() {
+					// 		e.preventDefault();
+					// 		var target = (container.attr('tool') === 'gitlab') ? window.location.protocol + "//" + window.location.host + "/gitlab" + this.pathname : this.href;
+					// 		container.load(target, onLoaded);
+				// 	});
+			// }
+			// var display = function(tool) {
+				// 	var container = $("#container");
+				// 	container.attr('tool', tool);
+				// 	var target = window.location.protocol + "//" + window.location.host + "/" + (tool || 'jenkins') + '/';
+				// 	$
+				// 	container.load(target, function(e) { onLoaded(container); });
+			// };
+			var onDocumentReady = function () { display('jenkins'); };
+			$(document).ready(onDocumentReady);
 		</script>
 		<base href="" />
 	</head>
 	<body>
 		<nav>
 			<ul>
-				<li><a onclick="display('jenkins')"><img src="https://wiki.jenkins-ci.org/download/attachments/2916393/logo.png?version=1&modificationDate=1302753947000" alt="Jenkins"></a></li>
-				<li><a onclick="display('artifactory')"><img src="https://www.jfrog.com/wp-content/uploads/2015/09/JFrog-Logo-trans-cut-300x287.png" alt="Artifactory"></a></li>
-				<li><a onclick="display('sonarqube')"><img src="http://docs.sonarqube.org/download/attachments/360449/global.logo?version=1&modificationDate=1432053627000&api=v2" alt="Sonarqube"></a></li>
-				<li><a onclick="display('gitlab')"><img src="https://gitlab.com/gitlab-com/gitlab-artwork/raw/master/wordmark/stacked_wm_no_bg.png" alt="GitLab"></a></li>
-				<li><a onclick="display('registry/v2/_content')"><img src="https://www.docker.com/sites/default/files/legal/small_v.png" alt="Docker registry"></a></li>
+				<li>
+					<a onclick="display('jenkins')">
+						<img src="https://wiki.jenkins-ci.org/download/attachments/2916393/logo.png?version=1&modificationDate=1302753947000" alt="Jenkins">
+					</a>
+				</li>
+				<li>
+					<a onclick="display('artifactory')">
+						<img src="https://www.jfrog.com/wp-content/uploads/2015/09/JFrog-Logo-trans-cut-300x287.png" alt="Artifactory">
+					</a>
+				</li>
+				<li>
+					<a onclick="display('sonarqube')">
+						<img src="http://docs.sonarqube.org/download/attachments/360449/global.logo?version=1&modificationDate=1432053627000&api=v2" alt="Sonarqube">
+					</a>
+				</li>
+				<!-- <li><a onclick="display('gitlab')"><img src="https://gitlab.com/gitlab-com/gitlab-artwork/raw/master/wordmark/stacked_wm_no_bg.png" alt="GitLab"></a></li> -->
+				<li>
+					<a onclick="display('registry/v2/_content')">
+						<img src="https://www.docker.com/sites/default/files/legal/small_v.png" alt="Docker registry">
+					</a>
+				</li>
 			</ul>
 			<div class="logo">
 				Codesketch
 			</div>
 		</nav>
-		<iframe id="container" frameborder="0" border="0" cellspacing="0" height="100%" onload="contentLoaded();">
+		<!-- <div id="container" onload="contentLoaded()"></div> -->
+		<iframe id="container" frameborder="0" border="0" cellspacing="0" height="100%">
 		</iframe>
 	</body>
 </html>
