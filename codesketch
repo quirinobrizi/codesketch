@@ -1,5 +1,7 @@
 #!/usr/bin/env bash -e
 
+MACHINE_NAME=codesketch
+
 function print_jenkins_token_if_present {
 	TOKEN=$(docker exec jenkins-master [ -f /var/jenkins_home/secrets/initialAdminPassword ] && cat /var/jenkins_home/secrets/initialAdminPassword)
 	if [ ! -z "$TOKEN" ]; then
@@ -23,8 +25,6 @@ function start {
 	sleep 60s
 	docker-compose -f docker-compose-nginx.yml up -d
 	echo "Codesketch has started"
-	echo "!!! Tools setup may take some time !!!"
-	exit 0
 }
 
 function stop {
@@ -51,7 +51,7 @@ case ${1} in
   start|stop|clean|config|logs)
 	case ${1} in
       start)
-		start
+		start ${@:2}
 	  ;;
       stop)
 		stop
@@ -70,4 +70,5 @@ case ${1} in
         usage
       ;;
     esac
+    exit 0
 esac
