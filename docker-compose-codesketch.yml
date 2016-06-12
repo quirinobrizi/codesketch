@@ -54,6 +54,17 @@ services:
     networks:
       - codesketch
 
+  lighthouse:
+    restart: always
+    container_name: lighthouse
+    image: quirinobrizi/lighthouse:0.0.1
+    expose:
+      - 3000
+    environment:
+      REGISTRY_URL: http://registry:5000
+    networks:
+      - codesketch
+
   sonarqube:
     restart: always
     container_name: sonarqube

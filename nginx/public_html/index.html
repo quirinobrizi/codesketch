@@ -22,7 +22,7 @@
 		<script type = "text/javascript" src = "http://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 		<script type = "text/javascript">
 			var display = function(tool) {
-				var target = window.location.protocol + "//" + window.location.host + "/" + (tool || 'jenkins') + '/',
+				var target = window.location.protocol + "//" + window.location.host + "/" + (tool || 'jenkins'),
 					container = $("#container");
 				container.attr('src', target);
 				container.attr('tool', tool);
@@ -80,7 +80,7 @@
 				</li>
 				<!-- <li><a onclick="display('gitlab')"><img src="https://gitlab.com/gitlab-com/gitlab-artwork/raw/master/wordmark/stacked_wm_no_bg.png" alt="GitLab"></a></li> -->
 				<li>
-					<a onclick="display('/v2/_catalog')">
+					<a onclick="display('lighthouse/index.html')">
 						<img src="https://www.docker.com/sites/default/files/legal/small_v.png" alt="Docker registry">
 					</a>
 				</li>
