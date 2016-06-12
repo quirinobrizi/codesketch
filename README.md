@@ -1,6 +1,34 @@
 # Codesketch
 
-A collection of project management tools.
+Codesketch proposess a collection of tools that allow code quality and delivery management, it is based on (Docker)[https://www.docker.com] for easy portability and evaluation. 
+
+## Tool
+
+The following tools are inclided:
+* [Jenkins](https://jenkins.io/)
+* [Artifactory](https://www.jfrog.com/open-source/)
+* [SonarQube](http://www.sonarqube.org/)
+* [Docker registry v2](https://docs.docker.com/registry/)
+
+## Getting started
+
+This section describes how to install and run Codesketch.
+
+### Prerequisite
+
+In order to install Codesketch the following software need to be present on your machine, please refer to the software documentation for information on how to install.
+
+* (Docker)[https://docs.docker.com/engine/quickstart/]
+* (Docker Compose)[https://docs.docker.com/compose/overview/]
+
+### Installation
+
+1) Download Codesketch latest release from th (releases page)[https://github.com/quirinobrizi/codesketch/releases]
+2) Extract the downloaded archive in your preferred folder (i.e. /opt/codeskech)
+3) Move to the newly created directory (i.e. cd /opt/codeskecth)
+4) issue the following command ```bash bash codesketch start ```
+
+All the tools will be pulled and installed in you machine.
 
 ## Management
 
@@ -68,11 +96,3 @@ One the configuration is made available on *nginx/conf.d* folder the following c
 ```bash
 bash codesketch restart nginx
 ```
-
-## Tool
-
-The following tools are inclided:
-* [Jenkins](https://jenkins.io/)
-* [Artifactory](https://www.jfrog.com/open-source/)
-* [SonarQube](http://www.sonarqube.org/)
-* [Docker registry v2](https://docs.docker.com/registry/)
