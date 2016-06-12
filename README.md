@@ -21,6 +21,8 @@ In order to install Codesketch the following software need to be present on your
 * [Docker](https://docs.docker.com/engine/quickstart/)
 * [Docker Compose](https://docs.docker.com/compose/overview/)
 
+When started the Codesketch requires 3GB of RAM, for a 6GB is recommended.
+
 ### Installation
 
 1. Download Codesketch latest release from th (releases page)[https://github.com/quirinobrizi/codesketch/releases]
@@ -29,6 +31,11 @@ In order to install Codesketch the following software need to be present on your
 4. issue the following command ```bash bash codesketch start ```
 
 All the tools will be pulled and installed in you machine.
+
+### Limitations
+
+* Data are stored in local volumes
+* Codesketch is not high available 
 
 ## Management
 
