@@ -4,16 +4,69 @@ A collection of project management tools.
 
 ## Management
 
-Following instruction describe how to start, stop Codesketch tools platform.
+Following instruction describe how to manage Codesketch tools platform.
 
 ### Start
+
+Start Codesketch tools.
+
 ``` bash
 bash codesketch start
 ```
 
 ### Stop
+
+Start Codesketch tools.
+
 ``` bash
 bash codesketch stop
+```
+
+### Logs
+
+Collect logs from codesketch tools. This command is temporary as a log collection stack will be introduced, as such a web based user interface will be available for log inspection.
+
+The container argument is optional, if provided only logs for the requested container(s) will be shown provided.
+
+``` bash
+bash codesketch logs [container <nginx|jenkins-master|jenkins-slave|artifactory|registry|lighthouse|sonarqube|postgresql>]
+```
+
+### Restart
+Restart all containers or a subset of conatainers. The container argument is optional, if provided only the container(s) provided will be restarted.
+
+```bash
+bash codesketch restart [container <nginx|jenkins-master|jenkins-slave|artifactory|registry|lighthouse|sonarqube|postgresql>]
+```
+
+This command is usefull if additional configuration need to be provided for NginX, in this case the command should be run as following:
+
+```bash
+bash codesketch restart nginx
+```
+
+### Use NginX to proxy your site
+
+To use codesketch NginX to proxy request for your application all you need is to provide additional configuration for NginX. The new configuration can be provided on the *nginx/conf.d* part of this installation folder and it will automatically loadded when NginX is reloaded (the easisest is to restart NginX container).
+
+A simple configuration for NginX can be as following:
+
+```bash
+server {
+  listen   80;
+  server_name   my-application.com;
+  access_log /var/log/nginx/access.log;
+
+  location / {
+    proxy_pass  http://internal.my-application.com;
+  }
+}
+```
+
+One the configuration is made available on *nginx/conf.d* folder the following command need to be issued in order to activate it:
+
+```bash
+bash codesketch restart nginx
 ```
 
 ## Tool

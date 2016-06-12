@@ -18,7 +18,7 @@ function configure {
 }
 
 function start {
-	configure
+	configured
 	echo "Starting Codesketch in you local machine using docker compose ..."
 	docker-compose -f docker-compose-codesketch.yml up -d --remove-orphans
 	echo "... waiting for Codesketch to start ..."
@@ -38,7 +38,11 @@ function clean {
 }
 
 function logs {
-	docker-compose -f docker-compose-codesketch.yml -f docker-compose-nginx.yml logs -f
+	docker-compose -f docker-compose-codesketch.yml -f docker-compose-nginx.yml logs -f $1
+}
+
+function restart {
+	docker-compose -f docker-compose-codesketch.yml -f docker-compose-nginx.yml restart $1
 }
 
 function usage {
@@ -48,7 +52,7 @@ function usage {
 }
 
 case ${1} in
-  start|stop|clean|config|logs)
+  start|stop|clean|config|logs|restart)
 	case ${1} in
       start)
 		start ${@:2}
@@ -63,7 +67,10 @@ case ${1} in
 		configure
 	  ;;
 	  logs)
-		logs
+		logs ${@:2}
+	  ;;
+	  restart)
+		restart ${@:2}
 	  ;;
 	  *)
         echo "Invalid parameter(s) or option(s)."
