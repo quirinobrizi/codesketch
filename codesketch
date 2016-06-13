@@ -1,27 +1,58 @@
 #!/usr/bin/env bash -e
 
-MACHINE_NAME=codesketch
-
-function print_jenkins_token_if_present {
-	TOKEN=$(docker exec jenkins-master [ -f /var/jenkins_home/secrets/initialAdminPassword ] && cat /var/jenkins_home/secrets/initialAdminPassword)
-	if [ ! -z "$TOKEN" ]; then
-		echo "Jenkins unlock token: $TOKEN"
-	fi
-}
+CONTROL_FILE=.codesketch
 
 function configure {
-	echo "Configuring Codesketch"
-	docker network create codesketch
-	docker-compose -f docker-compose-codesketch.yml pull
-	docker-compose -f docker-compose-nginx.yml pull
-	echo "... Codesketch configured"
+	echo "* configuring Codesketch"
+	configure_usage() {
+		echo "" 
+		echo "bash codesketch config: -s server name -c certificate path -k certificate key path" 1>&2; 
+		echo "when provided -c option -k must be provided and vice versa."
+		echo ""
+		exit 1; 
+	}
+
+    local OPTIND opts server_name certificate certificate_key
+    while getopts ":s:c:k:" opts; do
+        case "${opts}" in
+            s)
+                server_name="${OPTARG}"
+                ;;
+            c)
+                certificate="${OPTARG}"
+                ;;
+            k)
+                certificate_key="${OPTARG}"
+                ;;
+            *)
+                configure_usage
+                ;;
+        esac
+    done
+    shift $((OPTIND-1))
+
+    if [[ -z "$server_name" ]] || [[ -z "$certificate" ]] || [[ -z "$certificate_key" ]]; then
+    	echo "* not all of server name, certificate and certificate key has been provided using defaults"
+    	server_name="codesketch.internal" 
+	    certificate="/etc/nginx/certs/codesketch.crt" 
+	    certificate_key="/etc/nginx/certs/codesketch.key"
+    fi
+    echo "* configuring SSL engine, server name:${server_name}, certificate: ${certificate}, certificate key: ${certificate_key}"
+		sed -e "s/%{server_name}/${server_name}/" \
+		  -e "s+%{ssl_certificate}+${certificate}+" \
+		  -e "s+%{ssl_certificate_key}+${certificate_key}+" \
+		  ./nginx/templates/codesketch-ssl.tpl.conf > ./nginx/conf.d/codesketch-ssl.conf
+		docker network create codesketch
+		docker-compose -f docker-compose-codesketch.yml pull
+		docker-compose -f docker-compose-nginx.yml pull
+		touch $CONTROL_FILE
+		echo "* Codesketch configured"
 }
 
 function start {
-	configured
-	echo "Starting Codesketch in you local machine using docker compose ..."
+	echo "* starting Codesketch in you local machine using docker compose ..."
 	docker-compose -f docker-compose-codesketch.yml up -d --remove-orphans
-	echo "... waiting for Codesketch to start ..."
+	echo "* waiting for Codesketch to start"
 	sleep 60s
 	docker-compose -f docker-compose-nginx.yml up -d
 	echo "Codesketch has started"
@@ -42,12 +73,13 @@ function logs {
 }
 
 function restart {
-	docker-compose -f docker-compose-codesketch.yml -f docker-compose-nginx.yml restart $1
+	stop
+	start
 }
 
 function usage {
   echo "Usage:"
-  echo "    ${0} -s <stop the platform>|-u <start the platfom>|-r <redeploy the platform>"
+  echo "    ${0} stop <stop the platform> | start <start the platfom> | restart <redeploy the platform>"
   exit 1
 }
 
@@ -55,7 +87,10 @@ case ${1} in
   start|stop|clean|config|logs|restart)
 	case ${1} in
       start)
-		start ${@:2}
+		if [[ ! -e ${CONTROL_FILE} ]]; then
+			configure ${@:2}
+		fi
+		start
 	  ;;
       stop)
 		stop
@@ -64,7 +99,7 @@ case ${1} in
 		clean
 	  ;;
 	  config)
-		configure
+		configure ${@:2}
 	  ;;
 	  logs)
 		logs ${@:2}
