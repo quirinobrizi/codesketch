@@ -55,17 +55,22 @@ function start {
 	echo "* waiting for Codesketch to start"
 	sleep 60s
 	docker-compose -f docker-compose-nginx.yml up -d
-	echo "Codesketch has started"
+	echo "* Codesketch has started"
 }
 
 function stop {
+	echo "* stopping Codesketch"
 	docker-compose -f docker-compose-codesketch.yml stop
 	docker-compose -f docker-compose-nginx.yml stop
+	echo "* Codesketch stopped"
 }
 
 function clean {
+	stop
+	docker network rm codesketch
 	docker-compose -f docker-compose-codesketch.yml rm -f --all
 	docker-compose -f docker-compose-nginx.yml rm -f --all
+	rm -f ${CONTROL_FILE}
 }
 
 function logs {

@@ -23,6 +23,13 @@ In order to install Codesketch the following software need to be present on your
 
 When started the Codesketch requires 3GB of RAM, for a 6GB is recommended.
 
+### Default password
+
+* [Jenkins](https://jenkins.io/) - username: admin password: password
+* [Artifactory](https://www.jfrog.com/open-source/) - username: admin password: password
+* [SonarQube](http://www.sonarqube.org/) - username: admin password: admin
+* [Docker registry v2](https://docs.docker.com/registry/) - None
+
 ### Installation
 
 1. Download Codesketch latest release from th (releases page)[https://github.com/quirinobrizi/codesketch/releases]
