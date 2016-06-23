@@ -1,0 +1,7 @@
+
+LDAP_ORGANISATION=codesketch.internal
+LDAP_DOMAIN=codesketch.internal
+LDAP_ADMIN_PASSWORD=password
+JENKINS_LDAP_BASEDN=dc=codesketch,dc=internal
+JENKINS_LDAP_MANAGER_DN=cn=admin,dc=codesketch,dc=internal
+JENKINS_LDAP_MANAGER_PASSWORD=password

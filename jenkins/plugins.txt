@@ -55,3 +55,4 @@ workflow-durable-task-step:2.0
 pipeline-input-step:2.0
 github-branch-source:1.7
 github-organization-folder:1.3
+ldap:1.12
