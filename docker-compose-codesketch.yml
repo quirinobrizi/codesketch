@@ -27,7 +27,7 @@ services:
     restart: always
     container_name: jenkins-slave-01
     image: csanchez/jenkins-swarm-slave
-    command: "-master http://jenkins-master:8080/jenkins/ -username quirino -password abc -executors 2"
+    command: "-master http://jenkins-master:8080/jenkins/ -username codesketch -password codesketch -executors 2"
     expose:
       - 8080
     volumes:
