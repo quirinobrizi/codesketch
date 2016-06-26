@@ -35,7 +35,7 @@ Default account are provided for PHP OpenLDAP and Artifactory (artifactory allow
 
 ### Installation
 
-1. Download Codesketch latest release from th (releases page)[https://github.com/quirinobrizi/codesketch/releases]
+1. Download Codesketch latest release from th [releases page](https://github.com/quirinobrizi/codesketch/releases)
 2. Extract the downloaded archive in your preferred folder (i.e. /opt/codeskech)
 3. Move to the newly created directory (i.e. cd /opt/codeskecth)
 4. issue the following command ```bash bash codesketch start ```
