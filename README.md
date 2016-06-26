@@ -42,6 +42,10 @@ Default account are provided for PHP OpenLDAP and Artifactory (artifactory allow
 
 All the tools will be pulled and installed in you machine.
 
+### Access the tools
+
+To access code add your DNS (default codesketch.internal) to your hosts file and using your browser access https://<DNS>, if using default installation https://codesketch.internal.
+
 ### Limitations
 
 * Data are stored in local volumes
@@ -113,6 +117,16 @@ One the configuration is made available on *nginx/conf.d* folder the following c
 ```bash
 bash codesketch restart nginx
 ```
+
+### Push your images to docker registry
+
+To push an image to the private registry you need to tag it using your DNS, default codesketch.internal, and push the image.
+
+```bash
+docker tag my-image:latest codesketch.internal/my-image:latest
+docker push codesketch.internal/my-image:latest
+```
+
 ## Future features
 
 * Group based LDAP authentication

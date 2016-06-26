@@ -126,8 +126,8 @@ function clean {
 	docker-compose -f docker-compose-codesketch.yml rm -f --all
 	docker-compose -f docker-compose-nginx.yml rm -f --all
 	rm -f ./php-openldap/environment/env.yml
-	rm -f ./openldap/bootstrap
-	rm -f ./artifactory/etc
+	rm -rf ./openldap/bootstrap
+	rm -rf ./artifactory/etc
 	rm -f ./sonarqube/sonar.properties
 	rm -f ${CONTROL_FILE}
 }
