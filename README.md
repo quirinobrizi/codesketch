@@ -9,6 +9,8 @@ The following tools are inclided:
 * [Artifactory](https://www.jfrog.com/open-source/)
 * [SonarQube](http://www.sonarqube.org/)
 * [Docker registry v2](https://docs.docker.com/registry/)
+* [OpenLDAP](http://www.openldap.org)
+* [PHP OpenLDAP](http://phpldapadmin.sourceforge.net/wiki/index.php/Main_Page)
 
 ## Getting started
 
@@ -23,12 +25,13 @@ In order to install Codesketch the following software need to be present on your
 
 When started the Codesketch requires 3GB of RAM, for a 6GB is recommended.
 
-### Default password
+### Authentication
 
-* [Jenkins](https://jenkins.io/) - username: admin password: password
+COdeskectch uses LDAP to manage access, at startup a defualt user is created with username codeskectch and password codeskecth. More users can be added via PHP OpenLDAP user interface. 
+
+Default account are provided for PHP OpenLDAP and Artifactory (artifactory allows login using codesketch user as well):
 * [Artifactory](https://www.jfrog.com/open-source/) - username: admin password: password
-* [SonarQube](http://www.sonarqube.org/) - username: admin password: admin
-* [Docker registry v2](https://docs.docker.com/registry/) - None
+* [PHP OpenLDAP](http://phpldapadmin.sourceforge.net/wiki/index.php/Main_Page) - username: admin password: password
 
 ### Installation
 
@@ -110,3 +113,11 @@ One the configuration is made available on *nginx/conf.d* folder the following c
 ```bash
 bash codesketch restart nginx
 ```
+## Future features
+
+* Group based LDAP authentication
+* Introduce agile management tool
+* Docker Swarm integration
+* Distributed volumes
+* High availability
+* Introduce GitLab
