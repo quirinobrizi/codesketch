@@ -55,7 +55,7 @@ function configure {
 			fi 
 		done; 
 		echo "* evaluated DC string as $dc"
-		mkdir -p ./openldap/assets/config/bootstrap/ldif
+		mkdir -p ./openldap/bootstrap/ldif
 		sed -e "s/%{ldap_domain}/$dc/" \
 			./openldap/templates/codesketch.tpl.ldif > ./openldap/bootstrap/ldif/codesketch.ldif
 
@@ -70,9 +70,9 @@ function configure {
 		echo "* configuring Artifactory LDAP"
 		mkdir -p ./artifactory/etc
 		sed -e "s/%{artifactory_ldap_url}/${dc}/" \
-				-e "s/%s{artifactory_manager_dn}/cn=admin,${dc}/" \
-				-e "s/%s{artifactory_manager_password}/${LDAP_ADMIN_PASSWORD}/" \
-			./artifactory/templates/artifactory.config.latest.tpl.xml > ./artifactory/etc/artifactory.config.latest.xml
+				-e "s/%{artifactory_manager_dn}/cn=admin,${dc}/" \
+				-e "s/%{artifactory_manager_password}/${LDAP_ADMIN_PASSWORD}/" \
+			./artifactory/templates/artifactory.config.latest.tpl.xml > ./artifactory/etc/artifactory.config.xml
 		
 		echo "* creating environment file"
 		echo  > ./environment
@@ -83,16 +83,19 @@ function configure {
 		echo "JENKINS_LDAP_MANAGER_DN=cn=admin,${dc}" >> ./environment
 		echo "JENKINS_LDAP_MANAGER_PASSWORD=${LDAP_ADMIN_PASSWORD}" >> ./environment
 		
+		echo "* creating codesketch network"
 		docker network create codesketch
+		echo "* updating images"
 		docker-compose -f docker-compose-openldap.yml pull
 		docker-compose -f docker-compose-codesketch.yml pull
 		docker-compose -f docker-compose-nginx.yml pull
-
+		echo "* configuring default LDAP user (username: codesketch, password: codesketch)"
 		docker-compose -f docker-compose-openldap.yml up -d openldap
 		sleep 20s
 		docker cp ./openldap/bootstrap/ldif/codesketch.ldif openldap:/codesketch.ldif 
 		docker exec openldap ldapadd -x -D "cn=admin,${dc}" -w ${LDAP_ADMIN_PASSWORD} -f /codesketch.ldif -h openldap
 		docker-compose -f docker-compose-openldap.yml stop openldap
+		echo "* default user configuration completed."
 
 		touch $CONTROL_FILE
 		echo "* Codesketch configured"
@@ -123,17 +126,19 @@ function clean {
 	docker-compose -f docker-compose-codesketch.yml rm -f --all
 	docker-compose -f docker-compose-nginx.yml rm -f --all
 	rm -f ./php-openldap/environment/env.yml
-	rm -f ./openldap/bootstrap/ldif/codesketch.ldif
+	rm -f ./openldap/bootstrap
+	rm -f ./artifactory/etc
+	rm -f ./sonarqube/sonar.properties
 	rm -f ${CONTROL_FILE}
 }
 
 function down {
 	stop
-	docker network rm codesketch
+	clean
+	rm -rf ./openldap/config/*
 	docker-compose -f docker-compose-openldap.yml down -v
 	docker-compose -f docker-compose-codesketch.yml down -v
 	docker-compose -f docker-compose-nginx.yml down -v
-	rm -f ${CONTROL_FILE}
 }
 
 function logs {

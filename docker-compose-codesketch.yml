@@ -47,7 +47,7 @@ services:
       - artifactory-data:/var/opt/jfrog/artifactory/data
       - artifactory-logs:/var/opt/jfrog/artifactory/logs
       - artifactory-backup://var/opt/jfrog/artifactory/backup
-      - ./artifactory/etc/artifactory.config.latest.xml:/var/opt/jfrog/artifactory/etc/artifactory.config.latest.xml
+      - ./artifactory/etc/artifactory.config.xml:/var/opt/jfrog/artifactory/etc/artifactory.config.xml
     networks:
       - codesketch
 

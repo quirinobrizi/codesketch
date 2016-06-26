@@ -8,7 +8,6 @@ services:
     volumes:
       - openldap_data:/var/lib/ldap
       - ./openldap/config:/etc/ldap/slapd.d
-      # - ./openldap/bootstrap:/container/service/slapd/assets/config
     networks:
       - codesketch
     environment:

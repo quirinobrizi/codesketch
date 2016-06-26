@@ -25,9 +25,9 @@
                 <key>LDAP</key>
                 <enabled>true</enabled>
                 <ldapUrl>ldap://openldap/%{artifactory_ldap_url}</ldapUrl>
-                <userDnPattern></userDnPattern>
+                <userDnPattern>uid={0}</userDnPattern>
                 <search>
-                    <searchFilter>uid={0}</searchFilter>
+                    <searchFilter></searchFilter>
                     <searchSubTree>true</searchSubTree>
                     <managerDn>%{artifactory_manager_dn}</managerDn>
                     <managerPassword>%{artifactory_manager_password}</managerPassword>

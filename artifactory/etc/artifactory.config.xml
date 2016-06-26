@@ -25,12 +25,12 @@
                 <key>LDAP</key>
                 <enabled>true</enabled>
                 <ldapUrl>ldap://openldap/dc=codesketch,dc=internal</ldapUrl>
-                <userDnPattern></userDnPattern>
+                <userDnPattern>uid={0}</userDnPattern>
                 <search>
-                    <searchFilter>uid={0}</searchFilter>
+                    <searchFilter></searchFilter>
                     <searchSubTree>true</searchSubTree>
-                    <managerDn>%{artifactory_manager_dn}</managerDn>
-                    <managerPassword>%{artifactory_manager_password}</managerPassword>
+                    <managerDn>cn=admin,dc=codesketch,dc=internal</managerDn>
+                    <managerPassword>password</managerPassword>
                 </search>
                 <autoCreateUser>true</autoCreateUser>
                 <emailAttribute>mail</emailAttribute>
