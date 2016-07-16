@@ -55,11 +55,12 @@ function configure {
 			fi 
 		done; 
 		echo "* evaluated DC string as $dc"
+		echo "* configuring php-openldap"
 		mkdir -p ./openldap/bootstrap/ldif
 		sed -e "s/%{ldap_domain}/$dc/" \
 			./openldap/templates/codesketch.tpl.ldif > ./openldap/bootstrap/ldif/codesketch.ldif
-
-		echo "* configuring php-openldap"
+		sed -e "s/%{ldap_domain}/$dc/" \
+			./openldap/templates/groups.tpl.ldif > ./openldap/bootstrap/ldif/groups.ldif
 		mkdir -p ./php-openldap/environment
 		sed -e "s/%{dc}/$dc/" \
 				-e "s/%{server_name}/${server_name}/" \
@@ -92,7 +93,9 @@ function configure {
 		echo "* configuring default LDAP user (username: codesketch, password: codesketch)"
 		docker-compose -f docker-compose-openldap.yml up -d openldap
 		sleep 20s
+		docker cp ./openldap/bootstrap/ldif/groups.ldif openldap:/groups.ldif 
 		docker cp ./openldap/bootstrap/ldif/codesketch.ldif openldap:/codesketch.ldif 
+		docker exec openldap ldapadd -x -D "cn=admin,${dc}" -w ${LDAP_ADMIN_PASSWORD} -f /groups.ldif -h openldap
 		docker exec openldap ldapadd -x -D "cn=admin,${dc}" -w ${LDAP_ADMIN_PASSWORD} -f /codesketch.ldif -h openldap
 		docker-compose -f docker-compose-openldap.yml stop openldap
 		echo "* default user configuration completed."
@@ -150,6 +153,15 @@ function restart {
 	start
 }
 
+#
+# Add a new user
+#
+function user {
+	echo "Adding new user for DN $1"
+	docker cp $2 openldap:/user.ldif
+	docker exec openldap ldapadd -x -D "cn=admin,$1" -w ${LDAP_ADMIN_PASSWORD} -f /user.ldif -h openldap
+}
+
 function usage {
   echo "Usage:"
   echo "    ${0} stop <stop the platform> | start <start the platfom> | restart <redeploy the platform>"
@@ -157,7 +169,7 @@ function usage {
 }
 
 case ${1} in
-  start|stop|clean|config|logs|restart|down)
+  start|stop|clean|config|logs|restart|down|user)
 	case ${1} in
       start)
 		if [[ ! -e ${CONTROL_FILE} ]]; then
@@ -182,6 +194,9 @@ case ${1} in
 	  ;;
 	  down)
 		down
+	  ;;
+	  user)
+		user ${@:2}
 	  ;;
 	  *)
         echo "Invalid parameter(s) or option(s)."

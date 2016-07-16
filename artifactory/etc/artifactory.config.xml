@@ -9,7 +9,7 @@
         <showAddonsInfoCookie>1466624459311</showAddonsInfoCookie>
     </addons>
     <security>
-        <anonAccessEnabled>true</anonAccessEnabled>
+        <anonAccessEnabled>false</anonAccessEnabled>
         <anonAccessToBuildInfosDisabled>false</anonAccessToBuildInfosDisabled>
         <hideUnauthorizedResources>false</hideUnauthorizedResources>
         <passwordSettings>
