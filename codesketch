@@ -157,9 +157,18 @@ function restart {
 # Add a new user
 #
 function user {
-	echo "Adding new user for DN $1"
-	docker cp $2 openldap:/user.ldif
+	echo "Adding new user for DN $2"
+	uid=$(($RANDOM + 10002))
+	[[ "$1" == "jenkins" ]] && gid="501" || gid="504"
+	sed -e "s/%{ldap_domain}/$2/" \
+		-e "s/%{user}/$3/" \
+		-e "s/%{uidNumber}/$uid" \
+		-e "s/%{gidNumber}/$gid" \
+			./user.tpl.ldif > ./user.ldif
+	docker cp ./user.ldif openldap:/user.ldif
 	docker exec openldap ldapadd -x -D "cn=admin,$1" -w ${LDAP_ADMIN_PASSWORD} -f /user.ldif -h openldap
+	docker exec openldap rm -f /user.ldif
+	rm -f user.ldif
 }
 
 function usage {
