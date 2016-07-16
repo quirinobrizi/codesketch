@@ -27,10 +27,18 @@ When started the Codesketch requires 3GB of RAM, for a 6GB is recommended.
 
 ### Authentication
 
-COdeskectch uses LDAP to manage access, at startup a defualt user is created with username codeskectch and password codeskecth. More users can be added via PHP OpenLDAP user interface. 
+Codeskectch uses LDAP to manage access, at startup a defualt user is created with username codeskectch and password codeskecth. More users can be added via PHP OpenLDAP user interface. 
+
+Jenkins and Sonarqube authentication is based on groups, as per [Artifactory OSS limitations](https://www.jfrog.com/confluence/display/RTF/Artifactory+Comparison+Matrix) groups based authentocation is not enabled for Artifactory, maning that whane creating new users the user need to be added to the relative group(s).
+LDAP groups are defined as following:
+
+ * *administrators* groups contains Jenkins administrators
+ * *developers* group contains Jenkins developers
+ * *sonar-administrators* group containins Sonarqube administrators
+ * *sonar-users* group containins Sonarqube users
 
 Default account are provided for PHP OpenLDAP and Artifactory (artifactory allows login using codesketch user as well):
-* [Artifactory](https://www.jfrog.com/open-source/) - username: admin password: password
+* [Artifactory](https://www.jfrog.com/open-source/) - username: admin password: password, this is in addition to codesketch user and dedicated to administration activities.
 * [PHP OpenLDAP](http://phpldapadmin.sourceforge.net/wiki/index.php/Main_Page) - username: admin password: password
 
 ### Installation
@@ -129,7 +137,6 @@ docker push codesketch.internal/my-image:latest
 
 ## Future features
 
-* Group based LDAP authentication
 * Introduce agile management tool
 * Docker Swarm integration
 * Distributed volumes
