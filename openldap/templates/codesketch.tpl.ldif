@@ -8,8 +8,8 @@ objectClass: posixAccount
 objectClass: inetOrgPerson
 loginShell: /bin/bash
 homeDirectory: /home/codesketch
-uidNumber: 14583102
-gidNumber: 14564100
+uidNumber: 1002
+gidNumber: 502
 userPassword: {SSHA}D/qKCLi9GZ9+MMry65y6iYkJW8oQSbWW
 mail: codesketch@codesketch.eu
 gecos: Codesketch User
