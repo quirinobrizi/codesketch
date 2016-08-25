@@ -44,17 +44,17 @@ Default account are provided for PHP OpenLDAP and Artifactory (artifactory allow
 ### Installation
 
 #### Vagrant
-	1. Download Codesketch latest release from th [releases page](https://github.com/quirinobrizi/codesketch/releases)
-	2. Extract the downloaded archive in your preferred folder (i.e. /opt/codeskech)
-	3. Move to the vagrant directory (i.e. cd /opt/codeskecth/vagrant)
-	4. [Install vagrant](https://www.vagrantup.com/docs/installation/) 
-	5. Start vagrant using ``` bash vagrant up ``` command
+1. Download Codesketch latest release from th [releases page](https://github.com/quirinobrizi/codesketch/releases)
+2. Extract the downloaded archive in your preferred folder (i.e. /opt/codeskech)
+3. Move to the vagrant directory (i.e. cd /opt/codeskecth/vagrant)
+4. [Install vagrant](https://www.vagrantup.com/docs/installation/) 
+5. Start vagrant using ``` bash vagrant up ``` command
 
 #### Manual
-	1. Download Codesketch latest release from th [releases page](https://github.com/quirinobrizi/codesketch/releases)
-	2. Extract the downloaded archive in your preferred folder (i.e. /opt/codeskech)
-	3. Move to the newly created directory (i.e. cd /opt/codeskecth)
-	4. issue the following command ```bash bash codesketch start ```
+1. Download Codesketch latest release from th [releases page](https://github.com/quirinobrizi/codesketch/releases)
+2. Extract the downloaded archive in your preferred folder (i.e. /opt/codeskech)
+3. Move to the newly created directory (i.e. cd /opt/codeskecth)
+4. issue the following command ```bash bash codesketch start ```
 
 All the tools will be pulled and installed in you machine.
 
