@@ -78,7 +78,7 @@ services:
   sonarqube:
     restart: always
     container_name: sonarqube
-    image: sonarqube:4.5.7-alpine
+    image: sonarqube:5.6.1-alpine
     expose: 
       - 9000
       - 9092
