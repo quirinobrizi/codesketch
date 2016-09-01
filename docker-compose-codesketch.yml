@@ -24,6 +24,11 @@ services:
       - codesketch
     env_file:
       - ./environment
+    logging:
+      driver: "syslog"
+      options:
+        syslog-address: "udp://${LOGSTASH_HOST}:25826"
+        tag: "jenkins-master"
 
   jenkins-slave:
     restart: always
@@ -38,6 +43,13 @@ services:
       - jenkins-master
     networks:
       - codesketch 
+    logging:
+      driver: "syslog"
+      options:
+        syslog-address: "udp://${LOGSTASH_HOST}:25826"
+        tag: "jenkins-slave"
+    env_file:
+      - ./environment
 
   artifactory:
     restart: always
@@ -52,6 +64,13 @@ services:
       - ./artifactory/etc/artifactory.config.xml:/var/opt/jfrog/artifactory/etc/artifactory.config.xml
     networks:
       - codesketch
+    logging:
+      driver: "syslog"
+      options:
+        syslog-address: "udp://${LOGSTASH_HOST}:25826"
+        tag: "artifactory"
+    env_file:
+      - ./environment
 
   registry:
     restart: always
@@ -63,6 +82,13 @@ services:
       - docker-registry:/var/lib/registry
     networks:
       - codesketch
+    logging:
+      driver: "syslog"
+      options:
+        syslog-address: "udp://${LOGSTASH_HOST}:25826"
+        tag: "registry"
+    env_file:
+      - ./environment
 
   lighthouse:
     restart: always
@@ -74,6 +100,13 @@ services:
       REGISTRY_URL: http://registry:5000
     networks:
       - codesketch
+    logging:
+      driver: "syslog"
+      options:
+        syslog-address: "udp://${LOGSTASH_HOST}:25826"
+        tag: "lighthouse"
+    env_file:
+      - ./environment
 
   sonarqube:
     restart: always
@@ -93,6 +126,13 @@ services:
       - postgresql
     networks:
       - codesketch
+    logging:
+      driver: "syslog"
+      options:
+        syslog-address: "udp://${LOGSTASH_HOST}:25826"
+        tag: "sonarqube"
+    env_file:
+      - ./environment
 
   postgresql:
     restart: always
@@ -108,6 +148,13 @@ services:
       - postgresql-data:/var/lib/postgresql/data
     networks:
       - codesketch
+    logging:
+      driver: "syslog"
+      options:
+        syslog-address: "udp://${LOGSTASH_HOST}:25826"
+        tag: "postgresql"
+    env_file:
+      - ./environment
 
   # gitlab:
   #   image: 'gitlab/gitlab-ce:latest'

@@ -1,0 +1,81 @@
+version: "2"
+
+services:
+  elasticsearch:
+    container_name: elasticsearch
+    restart: always
+    image: elasticsearch:5.0.0
+    command: elasticsearch -E network.host=0.0.0.0 -E bootstrap.ignore_system_bootstrap_checks=true
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch:/usr/share/elasticsearch/data
+    networks:
+      - codesketch
+    depends_on:
+      - logstash
+    environment:
+      ES_JAVA_OPTS: -Xms1024m -Xmx1024m
+    logging:
+      driver: "syslog"
+      options:
+        syslog-address: "udp://${LOGSTASH_HOST}:25826"
+        tag: "elasticsearch"
+    env_file:
+      - ./environment
+
+  logstash:
+    container_name: logstash
+    restart: always
+    image: logstash:5.0.0
+    command: logstash -f /etc/logstash/conf.d/logstash.yml
+    environment:
+      - LS_HEAP_SIZE=1024m
+    ports:
+      - "12201:12201/udp"
+      - "25826:25826/udp"
+      - "5000:5000/tcp"
+    volumes:
+      - logstash:/etc/logstash
+      - ./logstash/conf.d/logstash.yml:/etc/logstash/conf.d/logstash.yml
+    networks:
+      - codesketch
+    logging:
+      driver: "syslog"
+      options:
+        syslog-address: "udp://${LOGSTASH_HOST}:25826"
+        tag: "logstash"
+    env_file:
+      - ./environment
+
+  kibana:
+    container_name: kibana
+    restart: always
+    image: kibana:5.0.0
+    command: kibana
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - SERVER_BASEPATH=/kibana
+    ports:
+      - "5601:5601"
+    networks:
+      - codesketch
+    depends_on:
+      - logstash
+    logging:
+      driver: "syslog"
+      options:
+        syslog-address: "udp://${LOGSTASH_HOST}:25826"
+        tag: "kibana"
+    env_file:
+      - ./environment
+
+networks:
+  codesketch:
+    external: true
+
+volumes:
+  elasticsearch:
+    driver: local
+  logstash:
+    driver: local

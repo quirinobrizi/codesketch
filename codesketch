@@ -34,78 +34,78 @@ function configure {
 
     if [[ -z "$server_name" ]] || [[ -z "$certificate" ]] || [[ -z "$certificate_key" ]]; then
     	echo "* not all of server name, certificate and certificate key has been provided using defaults"
-    	server_name="codesketch.internal" 
-	    certificate="/etc/nginx/certs/codesketch.crt" 
-	    certificate_key="/etc/nginx/certs/codesketch.key"
+    	server_name="codesketch.internal"
+    	certificate_folder=./nginx/certs 
+	    certificate="codesketch.crt" 
+	    certificate_key="codesketch.key"
     fi
-    echo "* configuring SSL engine, server name:${server_name}, certificate: ${certificate}, certificate key: ${certificate_key}"
-		mkdir -p ./nginx/conf.d/
-		sed -e "s/%{server_name}/${server_name}/" \
-		  -e "s+%{ssl_certificate}+${certificate}+" \
-		  -e "s+%{ssl_certificate_key}+${certificate_key}+" \
-		  ./nginx/templates/codesketch-ssl.tpl.conf > ./nginx/conf.d/codesketch-ssl.conf
 
-		echo "* configuring openldap"
-		local dc; 
-		for v in ${server_name//./ }; do 
-			if [[ -z "$dc" ]]; then 
-				dc="dc=$v"; 
-			else 
-				dc="$dc,dc=$v";
-			fi 
-		done; 
-		echo "* evaluated DC string as $dc"
-		echo "* configuring php-openldap"
-		mkdir -p ./openldap/bootstrap/ldif
-		sed -e "s/%{ldap_domain}/$dc/" \
-			./openldap/templates/codesketch.tpl.ldif > ./openldap/bootstrap/ldif/codesketch.ldif
-		sed -e "s/%{ldap_domain}/$dc/" \
-			./openldap/templates/groups.tpl.ldif > ./openldap/bootstrap/ldif/groups.ldif
-		mkdir -p ./php-openldap/environment
-		sed -e "s/%{dc}/$dc/" \
-				-e "s/%{server_name}/${server_name}/" \
-			./php-openldap/templates/env.tpl.yml > ./php-openldap/environment/env.yml
-		echo "* configuring sonarqube LDAP"
-		sed -e "s/%{dc}/$dc/" \
-			./sonarqube/templates/sonar.tpl.properties > ./sonarqube/sonar.properties
-		echo "* configuring Artifactory LDAP"
-		mkdir -p ./artifactory/etc
-		sed -e "s/%{artifactory_ldap_url}/${dc}/" \
-				-e "s/%{artifactory_manager_dn}/cn=admin,${dc}/" \
-				-e "s/%{artifactory_manager_password}/${LDAP_ADMIN_PASSWORD}/" \
-			./artifactory/templates/artifactory.config.latest.tpl.xml > ./artifactory/etc/artifactory.config.xml
-		
-		echo "* creating environment file"
-		echo  > ./environment
-		echo "LDAP_ORGANISATION=${server_name}" >> ./environment
-		echo "LDAP_DOMAIN=${server_name}" >> ./environment
-		echo "LDAP_ADMIN_PASSWORD=${LDAP_ADMIN_PASSWORD}" >> ./environment
-		echo "JENKINS_LDAP_BASEDN=${dc}" >> ./environment
-		echo "JENKINS_LDAP_MANAGER_DN=cn=admin,${dc}" >> ./environment
-		echo "JENKINS_LDAP_MANAGER_PASSWORD=${LDAP_ADMIN_PASSWORD}" >> ./environment
-		
-		echo "* creating codesketch network"
-		docker network create codesketch
-		echo "* updating images"
-		docker-compose -f docker-compose-openldap.yml pull
-		docker-compose -f docker-compose-codesketch.yml pull
-		docker-compose -f docker-compose-nginx.yml pull
-		echo "* configuring default LDAP user (username: codesketch, password: codesketch)"
-		docker-compose -f docker-compose-openldap.yml up -d openldap
-		sleep 20s
-		docker cp ./openldap/bootstrap/ldif/groups.ldif openldap:/groups.ldif 
-		docker cp ./openldap/bootstrap/ldif/codesketch.ldif openldap:/codesketch.ldif 
-		docker exec openldap ldapadd -x -D "cn=admin,${dc}" -w ${LDAP_ADMIN_PASSWORD} -f /groups.ldif -h openldap
-		docker exec openldap ldapadd -x -D "cn=admin,${dc}" -w ${LDAP_ADMIN_PASSWORD} -f /codesketch.ldif -h openldap
-		docker-compose -f docker-compose-openldap.yml stop openldap
-		echo "* default user configuration completed."
+	echo "* configuring openldap"
+	local dc; 
+	for v in ${server_name//./ }; do 
+		if [[ -z "$dc" ]]; then 
+			dc="dc=$v"; 
+		else 
+			dc="$dc,dc=$v";
+		fi 
+	done; 
+	echo "* evaluated DC string as $dc"
+	echo "* configuring php-openldap"
+	mkdir -p ./openldap/bootstrap/ldif
+	sed -e "s/%{ldap_domain}/$dc/" \
+		./openldap/templates/codesketch.tpl.ldif > ./openldap/bootstrap/ldif/codesketch.ldif
+	sed -e "s/%{ldap_domain}/$dc/" \
+		./openldap/templates/groups.tpl.ldif > ./openldap/bootstrap/ldif/groups.ldif
+	mkdir -p ./php-openldap/environment
+	sed -e "s/%{dc}/$dc/" \
+			-e "s/%{server_name}/${server_name}/" \
+		./php-openldap/templates/env.tpl.yml > ./php-openldap/environment/env.yml
+	echo "* configuring sonarqube LDAP"
+	sed -e "s/%{dc}/$dc/" \
+		./sonarqube/templates/sonar.tpl.properties > ./sonarqube/sonar.properties
+	echo "* configuring Artifactory LDAP"
+	mkdir -p ./artifactory/etc
+	sed -e "s/%{artifactory_ldap_url}/${dc}/" \
+			-e "s/%{artifactory_manager_dn}/cn=admin,${dc}/" \
+			-e "s/%{artifactory_manager_password}/${LDAP_ADMIN_PASSWORD}/" \
+		./artifactory/templates/artifactory.config.latest.tpl.xml > ./artifactory/etc/artifactory.config.xml
+	
+	echo "* creating environment file"
+	echo  > ./environment
+	echo "LDAP_ORGANISATION=${server_name}" >> ./environment
+	echo "LDAP_DOMAIN=${server_name}" >> ./environment
+	echo "LDAP_ADMIN_PASSWORD=${LDAP_ADMIN_PASSWORD}" >> ./environment
+	echo "JENKINS_LDAP_BASEDN=${dc}" >> ./environment
+	echo "JENKINS_LDAP_MANAGER_DN=cn=admin,${dc}" >> ./environment
+	echo "JENKINS_LDAP_MANAGER_PASSWORD=${LDAP_ADMIN_PASSWORD}" >> ./environment
+	echo "LOGSTASH_HOST=$(hostname)" >> ./environment
+	
+	echo "* creating codesketch network"
+	docker network create codesketch
+	echo "* updating images"
+	docker-compose -f docker-compose-elk.yml pull
+	docker-compose -f docker-compose-openldap.yml pull
+	docker-compose -f docker-compose-codesketch.yml pull
+	docker-compose -f docker-compose-nginx.yml pull
+	echo "* configuring default LDAP user (username: codesketch, password: codesketch)"
+	docker-compose -f docker-compose-openldap.yml up -d openldap
+	sleep 20s
+	docker cp ./openldap/bootstrap/ldif/groups.ldif openldap:/groups.ldif 
+	docker cp ./openldap/bootstrap/ldif/codesketch.ldif openldap:/codesketch.ldif 
+	docker exec openldap ldapadd -x -D "cn=admin,${dc}" -w ${LDAP_ADMIN_PASSWORD} -f /groups.ldif -h openldap
+	docker exec openldap ldapadd -x -D "cn=admin,${dc}" -w ${LDAP_ADMIN_PASSWORD} -f /codesketch.ldif -h openldap
+	docker-compose -f docker-compose-openldap.yml stop openldap
+	echo "* default user configuration completed."
 
-		touch $CONTROL_FILE
-		echo "* Codesketch configured"
+	touch $CONTROL_FILE
+	echo "* Codesketch configured"
 }
 
 function start {
-	echo "* starting Codesketch in you local machine using docker compose ..."
+	source ./environment
+	echo "* starting Codesketch in your machine using docker compose ..."
+	docker-compose -f docker-compose-elk.yml up -d
+	sleep 30s
 	docker-compose -f docker-compose-openldap.yml up -d
 	docker-compose -f docker-compose-codesketch.yml up -d
 	echo "* waiting for Codesketch to start"
@@ -116,6 +116,7 @@ function start {
 
 function stop {
 	echo "* stopping Codesketch"
+	docker-compose -f docker-compose-elk.yml stop
 	docker-compose -f docker-compose-openldap.yml stop
 	docker-compose -f docker-compose-codesketch.yml stop
 	docker-compose -f docker-compose-nginx.yml stop
@@ -125,6 +126,7 @@ function stop {
 function clean {
 	stop
 	docker network rm codesketch
+	docker-compose -f docker-compose-elk.yml rm -f -all
 	docker-compose -f docker-compose-openldap.yml rm -f --all
 	docker-compose -f docker-compose-codesketch.yml rm -f --all
 	docker-compose -f docker-compose-nginx.yml rm -f --all
@@ -139,13 +141,14 @@ function down {
 	stop
 	clean
 	rm -rf ./openldap/config/*
+	docker-compose -f docker-compose-elk.yml down -v
 	docker-compose -f docker-compose-openldap.yml down -v
 	docker-compose -f docker-compose-codesketch.yml down -v
 	docker-compose -f docker-compose-nginx.yml down -v
 }
 
 function logs {
-	docker-compose -f docker-compose-codesketch.yml -f docker-compose-nginx.yml -f docker-compose-openldap.yml logs -f $1
+	docker-compose -f docker-compose-codesketch.yml -f docker-compose-nginx.yml -f docker-compose-openldap.yml -f docker-compose-elk.yml logs -f $1
 }
 
 function restart {

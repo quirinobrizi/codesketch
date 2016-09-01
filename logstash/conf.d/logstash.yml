@@ -1,0 +1,37 @@
+input {
+  tcp {
+    port => 5000
+  }
+  gelf {
+    port => 12201
+  }
+  syslog {
+    port => 25826
+  }
+}
+
+filter {
+  if "docker/" in [program] {
+    mutate {
+      add_field => {
+        "container_id" => "%{program}"
+      }
+    }
+    mutate {
+      gsub => [
+        "container_id", "docker/", ""
+      ]
+    }
+    mutate {
+      update => [
+        "program", "docker"
+      ]
+    }
+  }
+}
+
+output {
+  elasticsearch {
+    hosts => "elasticsearch:9200"
+  }
+}

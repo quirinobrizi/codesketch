@@ -5,17 +5,19 @@ services:
   nginx:
     restart: always
     container_name: nginx
-    image: nginx:1.11.0-alpine
+    image: quirinobrizi/nginx:1.11.3-alpine-cs
     ports:
       - 80:80
       - 443:443
-    volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d/:ro
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/public_html:/usr/share/nginx/html:ro
-      - ./nginx/certs:/etc/nginx/certs:ro
     networks:
       - codesketch
+    logging:
+      driver: "syslog"
+      options:
+        syslog-address: "udp://${LOGSTASH_HOST}:25826"
+        tag: "nginx"
+    env_file:
+      - ./environment
 
 networks:
   codesketch:
