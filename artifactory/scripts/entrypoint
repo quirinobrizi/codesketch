@@ -1,0 +1,12 @@
+#!/bin/sh
+
+dc=$1
+ldap_admin_password=$2
+
+echo "* configuring Artifactory LDAP"
+sed -e "s/%{artifactory_ldap_url}/${dc}/" \
+	-e "s/%{artifactory_manager_dn}/cn=admin,${dc}/" \
+	-e "s/%{artifactory_manager_password}/${ldap_admin_password}/" \
+	/templates/artifactory.config.latest.tpl.xml > /var/opt/jfrog/artifactory/etc/artifactory.config.xml
+
+/tmp/run.sh

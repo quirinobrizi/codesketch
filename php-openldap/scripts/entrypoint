@@ -1,0 +1,11 @@
+#!/bin/sh
+
+server_name=$1
+dc=$2
+
+mkdir -p /container/environment/01-custom/
+sed -e "s/%{dc}/$dc/" \
+		-e "s/%{server_name}/${server_name}/" \
+		/templates/env.tpl.yml > /container/environment/01-custom/env.yaml
+
+exec /container/tool/run

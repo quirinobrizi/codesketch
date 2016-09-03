@@ -1,0 +1,5 @@
+#!/bin/bash
+
+VERSION=4.7.1-cs
+docker build -t quirinobrizi/artifactory-oss:${VERSION} .
+docker push quirinobrizi/artifactory-oss:${VERSION}

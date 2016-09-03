@@ -1,0 +1,5 @@
+#!/bin/bash
+
+VERSION=2.3-alpine-cs
+docker build -t quirinobrizi/jenkins:${VERSION} .
+docker push quirinobrizi/jenkins:${VERSION}

@@ -1,0 +1,5 @@
+#!/bin/bash
+
+VERSION=2.0-cs
+docker build -t quirinobrizi/jenkins-swarm-slave:${VERSION} .
+docker push quirinobrizi/jenkins-swarm-slave:${VERSION}

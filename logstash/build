@@ -1,0 +1,5 @@
+#!/bin/bash
+
+VERSION=5.0.0-cs
+docker build -t quirinobrizi/logstash:${VERSION} .
+docker push quirinobrizi/logstash:${VERSION}

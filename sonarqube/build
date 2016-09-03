@@ -1,0 +1,5 @@
+#!/bin/bash
+
+VERSION=5.6.1-alpine-cs
+docker build -t quirinobrizi/sonarqube:${VERSION} .
+docker push quirinobrizi/sonarqube:${VERSION}
