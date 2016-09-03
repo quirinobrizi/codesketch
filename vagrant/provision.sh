@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CS_RELEASE=0.0.6
+CS_RELEASE=0.0.6.1
 
 ## Install driver for HTTPS repo
 apt-get install -y --force-yes apt-transport-https
@@ -22,6 +22,7 @@ tar -xzf ${CS_RELEASE}.tar.gz
 mv codesketch-${CS_RELEASE} codesketch
 cd  codesketch
 su - vagrant
+export LOGSTASH_HOST=$(hostname)
 bash codesketch start
 
 echo "*************************************"
