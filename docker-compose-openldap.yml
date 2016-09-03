@@ -2,12 +2,11 @@ version: "2"
 
 services:
   openldap:
-    image: osixia/openldap:1.1.6
+    image: quirinobrizi/openldap:1.1.6-cs
     restart: always
     container_name: openldap
     volumes:
       - openldap_data:/var/lib/ldap
-      - ./openldap/config:/etc/ldap/slapd.d
     networks:
       - codesketch
     environment:
@@ -18,18 +17,16 @@ services:
     env_file:
       - ./environment
     logging:
-      driver: "syslog"
+      driver: "gelf"
       options:
-        syslog-address: "udp://${LOGSTASH_HOST}:25826"
+        gelf-address: "udp://${LOGSTASH_HOST}:12201"
         tag: "openldap"
   
   phpopenldap:
-    image: osixia/phpldapadmin:0.6.9
+    image: quirinobrizi/php-openldap:0.6.9-cs
     container_name: php-openldap
     ports:
       - 6443:80
-    volumes:
-      - ./php-openldap/environment/env.yml:/container/environment/01-custom/env.yaml
     networks:
       - codesketch
     depends_on:
@@ -39,9 +36,9 @@ services:
     env_file:
       - ./environment
     logging:
-      driver: "syslog"
+      driver: "gelf"
       options:
-        syslog-address: "udp://${LOGSTASH_HOST}:25826"
+        gelf-address: "udp://${LOGSTASH_HOST}:12201"
         tag: "phpopenldap"
 
 networks:

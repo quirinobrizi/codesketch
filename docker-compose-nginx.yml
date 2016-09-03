@@ -11,10 +11,12 @@ services:
       - 443:443
     networks:
       - codesketch
+    volumes:
+      - ./nginx/certs:/certs/
     logging:
-      driver: "syslog"
+      driver: "gelf"
       options:
-        syslog-address: "udp://${LOGSTASH_HOST}:25826"
+        gelf-address: "udp://${LOGSTASH_HOST}:12201"
         tag: "nginx"
     env_file:
       - ./environment

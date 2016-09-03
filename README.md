@@ -11,6 +11,7 @@ The following tools are inclided:
 * [Docker registry v2](https://docs.docker.com/registry/)
 * [OpenLDAP](http://www.openldap.org)
 * [PHP OpenLDAP](http://phpldapadmin.sourceforge.net/wiki/index.php/Main_Page)
+* [ELK Stack](https://www.elastic.co/webinars/introduction-elk-stack)
 
 ## Getting started
 
@@ -90,13 +91,7 @@ bash codesketch stop
 
 ### Logs
 
-Collect logs from codesketch tools. This command is temporary as a log collection stack will be introduced, as such a web based user interface will be available for log inspection.
-
-The container argument is optional, if provided only logs for the requested container(s) will be shown provided.
-
-``` bash
-bash codesketch logs [container <nginx|jenkins-master|jenkins-slave|artifactory|registry|lighthouse|sonarqube|postgresql>]
-```
+Codesketch logs are made available trhought Kibana.
 
 ### Restart
 Restart all containers or a subset of conatainers. The container argument is optional, if provided only the container(s) provided will be restarted.

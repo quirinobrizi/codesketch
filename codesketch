@@ -48,32 +48,15 @@ function configure {
 		else 
 			dc="$dc,dc=$v";
 		fi 
-	done; 
+	done;
 	echo "* evaluated DC string as $dc"
-	echo "* configuring php-openldap"
-	mkdir -p ./openldap/bootstrap/ldif
-	sed -e "s/%{ldap_domain}/$dc/" \
-		./openldap/templates/codesketch.tpl.ldif > ./openldap/bootstrap/ldif/codesketch.ldif
-	sed -e "s/%{ldap_domain}/$dc/" \
-		./openldap/templates/groups.tpl.ldif > ./openldap/bootstrap/ldif/groups.ldif
-	mkdir -p ./php-openldap/environment
-	sed -e "s/%{dc}/$dc/" \
-			-e "s/%{server_name}/${server_name}/" \
-		./php-openldap/templates/env.tpl.yml > ./php-openldap/environment/env.yml
-	echo "* configuring sonarqube LDAP"
-	sed -e "s/%{dc}/$dc/" \
-		./sonarqube/templates/sonar.tpl.properties > ./sonarqube/sonar.properties
-	echo "* configuring Artifactory LDAP"
-	mkdir -p ./artifactory/etc
-	sed -e "s/%{artifactory_ldap_url}/${dc}/" \
-			-e "s/%{artifactory_manager_dn}/cn=admin,${dc}/" \
-			-e "s/%{artifactory_manager_password}/${LDAP_ADMIN_PASSWORD}/" \
-		./artifactory/templates/artifactory.config.latest.tpl.xml > ./artifactory/etc/artifactory.config.xml
 	
 	echo "* creating environment file"
 	echo  > ./environment
+	echo "SERVER_NAME=${server_name}" >> ./environment
 	echo "LDAP_ORGANISATION=${server_name}" >> ./environment
 	echo "LDAP_DOMAIN=${server_name}" >> ./environment
+	echo "LDAP_BASEDN=${dc}" >> ./environment
 	echo "LDAP_ADMIN_PASSWORD=${LDAP_ADMIN_PASSWORD}" >> ./environment
 	echo "JENKINS_LDAP_BASEDN=${dc}" >> ./environment
 	echo "JENKINS_LDAP_MANAGER_DN=cn=admin,${dc}" >> ./environment
@@ -87,7 +70,14 @@ function configure {
 	docker-compose -f docker-compose-openldap.yml pull
 	docker-compose -f docker-compose-codesketch.yml pull
 	docker-compose -f docker-compose-nginx.yml pull
-	echo "* configuring default LDAP user (username: codesketch, password: codesketch)"
+	
+	echo "* configuring default LDAP users and groups (default - username: codesketch, password: codesketch)"
+	echo "* configuring openldap"
+	mkdir -p ./openldap/bootstrap/ldif
+	sed -e "s/%{ldap_domain}/$dc/" \
+		./openldap/templates/codesketch.tpl.ldif > ./openldap/bootstrap/ldif/codesketch.ldif
+	sed -e "s/%{ldap_domain}/$dc/" \
+		./openldap/templates/groups.tpl.ldif > ./openldap/bootstrap/ldif/groups.ldif
 	docker-compose -f docker-compose-openldap.yml up -d openldap
 	sleep 20s
 	docker cp ./openldap/bootstrap/ldif/groups.ldif openldap:/groups.ldif 
@@ -108,7 +98,7 @@ function start {
 	sleep 30s
 	docker-compose -f docker-compose-openldap.yml up -d
 	docker-compose -f docker-compose-codesketch.yml up -d
-	echo "* waiting for Codesketch to start"
+	echo "* waiting for Codesketch to start (Please be patient this can take few minutes...)"
 	sleep 120s
 	docker-compose -f docker-compose-nginx.yml up -d
 	echo "* Codesketch has started"

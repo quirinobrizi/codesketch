@@ -17,9 +17,9 @@ services:
     environment:
       ES_JAVA_OPTS: -Xms1024m -Xmx1024m
     logging:
-      driver: "syslog"
+      driver: "gelf"
       options:
-        syslog-address: "udp://${LOGSTASH_HOST}:25826"
+        gelf-address: "udp://${LOGSTASH_HOST}:12201"
         tag: "elasticsearch"
     env_file:
       - ./environment
@@ -27,7 +27,7 @@ services:
   logstash:
     container_name: logstash
     restart: always
-    image: logstash:5.0.0
+    image: quirinobrizi/logstash:5.0.0-cs
     command: logstash -f /etc/logstash/conf.d/logstash.yml
     environment:
       - LS_HEAP_SIZE=1024m
@@ -37,13 +37,12 @@ services:
       - "5000:5000/tcp"
     volumes:
       - logstash:/etc/logstash
-      - ./logstash/conf.d/logstash.yml:/etc/logstash/conf.d/logstash.yml
     networks:
       - codesketch
     logging:
-      driver: "syslog"
+      driver: "gelf"
       options:
-        syslog-address: "udp://${LOGSTASH_HOST}:25826"
+        gelf-address: "udp://${LOGSTASH_HOST}:12201"
         tag: "logstash"
     env_file:
       - ./environment
@@ -63,9 +62,9 @@ services:
     depends_on:
       - logstash
     logging:
-      driver: "syslog"
+      driver: "gelf"
       options:
-        syslog-address: "udp://${LOGSTASH_HOST}:25826"
+        gelf-address: "udp://${LOGSTASH_HOST}:12201"
         tag: "kibana"
     env_file:
       - ./environment

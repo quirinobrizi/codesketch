@@ -7,16 +7,15 @@ ENV CERTIFICATE_FOLDER ./certs/
 ENV CERTIFICATE codesketch.crt
 ENV CERTIFICATE_KEY codesketch.key
 
-COPY ./scripts/* /scripts/
+COPY ./scripts/entrypoint /
 COPY ./templates/* /templates/
 COPY ${CERTIFICATE_FOLDER}/${CERTIFICATE} /certs/
 COPY ${CERTIFICATE_FOLDER}/${CERTIFICATE_KEY} /certs/
 COPY ./nginx.conf /etc/nginx/nginx.conf
 COPY ./public_html/* /usr/share/nginx/html/
 
-RUN chmod +x /scripts/setup.sh
-RUN cd /scripts && /bin/sh setup.sh ${SERVER_NAME} /certs/${CERTIFICATE} /certs/${CERTIFICATE_KEY}
+RUN chmod +x /entrypoint
 
 EXPOSE 80 443
 
-CMD ["nginx", "-g", "daemon off;"]
+ENTRYPOINT /entrypoint ${SERVER_NAME} "/certs/${CERTIFICATE}" "/certs/${CERTIFICATE_KEY}"
