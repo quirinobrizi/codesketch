@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CS_RELEASE=0.0.5
+CS_RELEASE=0.0.6
 
 ## Install driver for HTTPS repo
 apt-get install -y --force-yes apt-transport-https
