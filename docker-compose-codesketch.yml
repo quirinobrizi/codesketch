@@ -57,6 +57,8 @@ services:
     image: quirinobrizi/artifactory-oss:4.7.1-cs
     expose:
       - 8081
+    environment:
+      JAVA_OPTS: "-Xms1g -Xmx3g"
     volumes:
       - artifactory-data:/var/opt/jfrog/artifactory/data
       - artifactory-logs:/var/opt/jfrog/artifactory/logs
