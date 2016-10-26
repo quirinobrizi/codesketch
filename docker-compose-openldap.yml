@@ -7,6 +7,7 @@ services:
     container_name: openldap
     volumes:
       - openldap_data:/var/lib/ldap
+      - openldap_conf:/etc/ldap/slapd.d
     networks:
       - codesketch
     environment:
@@ -47,4 +48,6 @@ networks:
 
 volumes:
   openldap_data:
+    driver: local
+  openldap_conf:
     driver: local
