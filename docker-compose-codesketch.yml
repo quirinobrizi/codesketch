@@ -6,6 +6,8 @@ services:
     restart: always
     container_name: jenkins-master
     image: quirinobrizi/jenkins:2.3-alpine-cs
+    extra_hosts:
+      - "${SERVER_NAME}:${PROXY_HOST}"
     expose:
       - 8080
       - 50000
@@ -35,10 +37,14 @@ services:
     container_name: jenkins-slave-01
     image: quirinobrizi/jenkins-swarm-slave:2.0-cs
     command: "-master http://jenkins-master:8080/jenkins/ -username codesketch -password codesketch -executors 2"
+    privileged: true
+    user: root
+    extra_hosts:
+      - "${SERVER_NAME}:${PROXY_HOST}"
     expose:
       - 8080
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock:rw
     depends_on:
       - jenkins-master
     networks:

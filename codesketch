@@ -62,6 +62,12 @@ function configure {
 	echo "JENKINS_LDAP_MANAGER_DN=cn=admin,${dc}" >> ./environment
 	echo "JENKINS_LDAP_MANAGER_PASSWORD=${LDAP_ADMIN_PASSWORD}" >> ./environment
 	echo "LOGSTASH_HOST=$(hostname)" >> ./environment
+
+	cho "* creating .env file"
+	echo  > ./environment
+	echo "SERVER_NAME=${server_name}" >> ./.env
+	echo "LOGSTASH_HOST=$(hostname)" >> ./.env
+	echo "PROXY_HOST=$(hostname)" >> ./.env
 	
 	echo "* creating codesketch network"
 	docker network create codesketch
