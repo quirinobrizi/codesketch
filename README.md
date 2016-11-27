@@ -78,7 +78,7 @@ Following instruction describe how to manage Codesketch tools platform.
 Start Codesketch tools.
 
 ``` bash
-export LOGSTASH_HOST=$(hostname) && bash codesketch start
+bash codesketch start
 ```
 
 ### Stop
