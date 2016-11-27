@@ -1,4 +1,4 @@
-FROM logstash:5.0.0
+FROM logstash:5
 
 MAINTAINER Quirino Brizi <quirino.brizi@gmail.com>
 

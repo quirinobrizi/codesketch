@@ -1,0 +1,15 @@
+dn: uid=%{user},%{ldap_domain}
+changetype: add
+uid: %{user}
+cn: %{user}
+sn: 3
+objectClass: top
+objectClass: posixAccount
+objectClass: inetOrgPerson
+loginShell: /bin/bash
+homeDirectory: /home/%{user}
+uidNumber: %{uidNumber}
+gidNumber: %{gidNumber}
+userPassword: {SSHA}D/qKCLi9GZ9+MMry65y6iYkJW8oQSbWW
+mail: %{user}@codesketch.eu
+gecos: %{user} User

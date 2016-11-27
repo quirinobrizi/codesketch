@@ -4,10 +4,10 @@ services:
   elasticsearch:
     container_name: elasticsearch
     restart: always
-    image: elasticsearch:5.0.0
-    command: elasticsearch -E network.host=0.0.0.0 -E bootstrap.ignore_system_bootstrap_checks=true
-    ports:
-      - "9200:9200"
+    image: quirinobrizi/elasticsearch:5-cs
+    command: elasticsearch -E network.host=0.0.0.0
+    expose:
+      - 9200
     volumes:
       - elasticsearch:/usr/share/elasticsearch/data
     networks:
@@ -55,8 +55,8 @@ services:
     environment:
       - ELASTICSEARCH_URL=http://elasticsearch:9200
       - SERVER_BASEPATH=/kibana
-    ports:
-      - "5601:5601"
+    expose:
+      - 5601
     networks:
       - codesketch
     depends_on:

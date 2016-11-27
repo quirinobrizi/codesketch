@@ -52,23 +52,26 @@ function configure {
 	echo "* evaluated DC string as $dc"
 	
 	echo "* creating environment file"
-	echo  > ./environment
-	echo "SERVER_NAME=${server_name}" >> ./environment
-	echo "LDAP_ORGANISATION=${server_name}" >> ./environment
-	echo "LDAP_DOMAIN=${server_name}" >> ./environment
-	echo "LDAP_BASEDN=${dc}" >> ./environment
-	echo "LDAP_ADMIN_PASSWORD=${LDAP_ADMIN_PASSWORD}" >> ./environment
-	echo "JENKINS_LDAP_BASEDN=${dc}" >> ./environment
-	echo "JENKINS_LDAP_MANAGER_DN=cn=admin,${dc}" >> ./environment
-	echo "JENKINS_LDAP_MANAGER_PASSWORD=${LDAP_ADMIN_PASSWORD}" >> ./environment
-	echo "LOGSTASH_HOST=$(hostname)" >> ./environment
+	touch environment
+	echo "SERVER_NAME=${server_name}" >> environment
+	echo "LDAP_ORGANISATION=${server_name}" >> environment
+	echo "LDAP_DOMAIN=${server_name}" >> environment
+	echo "LDAP_BASEDN=${dc}" >> environment
+	echo "LDAP_ADMIN_PASSWORD=${LDAP_ADMIN_PASSWORD}" >> environment
+	echo "JENKINS_LDAP_BASEDN=${dc}" >> environment
+	echo "JENKINS_LDAP_MANAGER_DN=cn=admin,${dc}" >> environment
+	echo "JENKINS_LDAP_MANAGER_PASSWORD=${LDAP_ADMIN_PASSWORD}" >> environment
+	echo "LOGSTASH_HOST=$(hostname)" >> environment
 
-	cho "* creating .env file"
-	echo  > ./environment
-	echo "SERVER_NAME=${server_name}" >> ./.env
-	echo "LOGSTASH_HOST=$(hostname)" >> ./.env
-	echo "PROXY_HOST=$(hostname)" >> ./.env
+	echo "* creating .env file"
+	touch .env
+	echo "SERVER_NAME=${server_name}" >> .env
+	echo "LOGSTASH_HOST=$(ip route get 1 | awk '{print $NF;exit}')" >> .env
+	echo "PROXY_HOST=$(ip route get 1 | awk '{print $NF;exit}')" >> .env
 	
+	echo "* setting vm.max_map_count=262144"
+	sysctl -w vm.max_map_count=262144
+
 	echo "* creating codesketch network"
 	docker network create codesketch
 	echo "* updating images"
@@ -122,7 +125,7 @@ function stop {
 function clean {
 	stop
 	docker network rm codesketch
-	docker-compose -f docker-compose-elk.yml rm -f -all
+	docker-compose -f docker-compose-elk.yml rm -f --all
 	docker-compose -f docker-compose-openldap.yml rm -f --all
 	docker-compose -f docker-compose-codesketch.yml rm -f --all
 	docker-compose -f docker-compose-nginx.yml rm -f --all
@@ -131,10 +134,11 @@ function clean {
 	rm -rf ./artifactory/etc
 	rm -f ./sonarqube/sonar.properties
 	rm -f ${CONTROL_FILE}
+	rm -f ./.env
+	rm -f ./environment
 }
 
 function down {
-	stop
 	clean
 	rm -rf ./openldap/config/*
 	docker-compose -f docker-compose-elk.yml down -v
@@ -175,6 +179,11 @@ function usage {
   echo "    ${0} stop <stop the platform> | start <start the platfom> | restart <redeploy the platform>"
   exit 1
 }
+
+if [ "$EUID" -ne 0 ]
+  then echo "* Please codesketch run as root"
+  exit 1
+fi
 
 case ${1} in
   start|stop|clean|config|logs|restart|down|user)

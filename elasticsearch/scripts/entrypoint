@@ -1,0 +1,6 @@
+#!/bin/sh
+
+echo "* configuring elasticsearch"
+sysctl -w vm.max_map_count=${MAX_MAP_COUNT}
+
+elasticsearch -E network.host=0.0.0.0 -E es.bootstrap.seccomp=false
