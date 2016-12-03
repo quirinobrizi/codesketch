@@ -1,0 +1,5 @@
+#!/bin/bash
+
+VERSION=5.0.1-cs
+docker build -t quirinobrizi/kibana:${VERSION} .
+docker push quirinobrizi/kibana:${VERSION}
