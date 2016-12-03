@@ -6,6 +6,7 @@ services:
     restart: always
     container_name: jenkins-master
     image: quirinobrizi/jenkins:2.3-alpine-cs
+    privileged: true
     extra_hosts:
       - "${SERVER_NAME}:${PROXY_HOST}"
     expose:
