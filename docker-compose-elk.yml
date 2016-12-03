@@ -50,7 +50,7 @@ services:
   kibana:
     container_name: kibana
     restart: always
-    image: kibana:5.0.1
+    image: quirinobrizi/kibana:5.0.1-cs
     command: kibana
     environment:
       - ELASTICSEARCH_URL=http://elasticsearch:9200

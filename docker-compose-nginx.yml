@@ -5,7 +5,7 @@ services:
   nginx:
     restart: always
     container_name: nginx
-    image: quirinobrizi/nginx:1.11.3-alpine-cs
+    image: quirinobrizi/nginx:1.11.6-ldap-cs
     ports:
       - 80:80
       - 443:443

@@ -10,7 +10,7 @@
 version: 1
 
 # Entry 1: ou=groups,%{ldap_domain}
-dn: ou=groups,dc=codesketch,dc=internal
+dn: ou=groups,%{ldap_domain}
 objectclass: organizationalUnit
 objectclass: top
 ou: groups

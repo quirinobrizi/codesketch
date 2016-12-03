@@ -1,5 +1,5 @@
 #!/bin/bash
 
-VERSION=1.11.3-alpine-cs
+VERSION=1.11.6-ldap-cs
 docker build -t quirinobrizi/nginx:${VERSION} .
 docker push quirinobrizi/nginx:${VERSION}

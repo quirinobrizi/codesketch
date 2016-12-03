@@ -13,8 +13,8 @@ function configure {
 		exit 1; 
 	}
 
-    local OPTIND opts server_name certificate certificate_key
-    while getopts ":s:c:k:" opts; do
+    local OPTIND opts server_name certificate certificate_key email swarm
+    while getopts ":s:c:k:e:w:" opts; do
         case "${opts}" in
             s)
                 server_name="${OPTARG}"
@@ -25,6 +25,12 @@ function configure {
             k)
                 certificate_key="${OPTARG}"
                 ;;
+            e) 
+				email="${OPTARG}"
+				;;
+			w)
+				swarm=1
+				;;
             *)
                 configure_usage
                 ;;
@@ -54,8 +60,9 @@ function configure {
 	echo "* creating environment file"
 	touch environment
 	echo "SERVER_NAME=${server_name}" >> environment
+	echo "EMAIL=${email}" >> environment
 	echo "LDAP_ORGANISATION=${server_name}" >> environment
-	echo "LDAP_DOMAIN=${server_name}" >> environment
+	echo "LDAP_DOMAIN=${server_name}" >> environment 
 	echo "LDAP_BASEDN=${dc}" >> environment
 	echo "LDAP_ADMIN_PASSWORD=${LDAP_ADMIN_PASSWORD}" >> environment
 	echo "JENKINS_LDAP_BASEDN=${dc}" >> environment
@@ -71,14 +78,14 @@ function configure {
 	
 	echo "* setting vm.max_map_count=262144"
 	sysctl -w vm.max_map_count=262144
+	cp ./nginx/certs/codesketch.crt /usr/local/share/ca-certificates/
+	update-ca-certificates
+	service docker restart
 
 	echo "* creating codesketch network"
 	docker network create codesketch
 	echo "* updating images"
-	docker-compose -f docker-compose-elk.yml pull
-	docker-compose -f docker-compose-openldap.yml pull
-	docker-compose -f docker-compose-codesketch.yml pull
-	docker-compose -f docker-compose-nginx.yml pull
+	docker-compose -f docker-compose-nginx.yml -f docker-compose-codesketch.yml -f docker-compose-openldap.yml -f docker-compose-elk.yml pull
 	
 	echo "* configuring default LDAP users and groups (default - username: codesketch, password: codesketch)"
 	echo "* configuring openldap"
@@ -106,6 +113,7 @@ function start {
 	docker-compose -f docker-compose-elk.yml up -d
 	sleep 30s
 	docker-compose -f docker-compose-openldap.yml up -d
+	sleep 10s
 	docker-compose -f docker-compose-codesketch.yml up -d
 	echo "* waiting for Codesketch to start (Please be patient this can take few minutes...)"
 	sleep 120s
