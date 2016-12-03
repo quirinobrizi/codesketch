@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CS_RELEASE=0.0.6.1
+CS_RELEASE=0.0.8
 
 ## Install driver for HTTPS repo
 apt-get install -y --force-yes apt-transport-https
@@ -13,7 +13,7 @@ wget -qO- https://get.docker.com/ | sh
 sudo usermod -aG docker vagrant
 
 echo "* Install docker compose"
-curl -L https://github.com/docker/compose/releases/download/1.8.0/docker-compose-Linux-x86_64 > /usr/local/bin/docker-compose
+curl -L https://github.com/docker/compose/releases/download/1.9.0/docker-compose-Linux-x86_64 > /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
 
 echo "* Creating swap on file"
