@@ -1,0 +1,87 @@
+#!/usr/bin/env bash -e
+
+if [ "$EUID" -ne 0 ]
+  then echo "* Please codesketch run as root"
+  exit 1
+fi
+
+NODES=${1:-2}
+SERVER_NAME=${2:-"codesketch.internal"}
+NODE_MEMORY=2048
+NODE_DISK_SIZE=12000
+
+echo " * creating codesketch swarm nodes: ${NODES}, server name: ${SERVER_NAME}"
+
+RUNNING_CONSUL=$(docker-machine ip codesketch-consul)
+if [ "${RUNNING_CONSUL}" == "" ]; then
+	echo " * consul URI not provided and consul instance not found, create consul machine"
+	docker-machine create \
+		--driver virtualbox \
+		--virtualbox-host-dns-resolver \
+		--virtualbox-disk-size "5000" \
+		--virtualbox-memory "512" \
+		codesketch-consul
+	[ "$?" != "0" ] && exit 1
+
+	eval $(docker-machine env codesketch-consul)
+	docker-compose -f swarm/docker-compose-consul.yml up -d
+	CONSUL="$(docker-machine ip codesketch-consul):8500"
+else
+	CONSUL="${RUNNING_CONSUL}:8500"
+fi
+echo " * consul listening at ${CONSUL}"
+RUNNING_MASTER=$(docker-machine ip codesketch-swarm-master)
+if [ "${RUNNING_MASTER}" == "" ]; then
+	echo " * creating docker swamr master"
+	docker-machine create \
+		-d virtualbox \
+		--virtualbox-disk-size "${NODE_DISK_SIZE}" \
+		--virtualbox-memory "${NODE_MEMORY}" \
+		--swarm \
+		--swarm-master \
+		--swarm-discovery="consul://${CONSUL}" \
+		--engine-opt="cluster-store=consul://${CONSUL}" \
+		--engine-opt="cluster-advertise=eth1:2376" \
+		--engine-insecure-registry "${SERVER_NAME}" \
+		--virtualbox-host-dns-resolver \
+		codesketch-swarm-master
+	[ "$?" != "0" ] && exit 1
+else
+	echo " * found codesketch swarm master at ${RUNNING_MASTER}"
+fi
+
+for i in $(seq 1 ${NODES}); do
+	RUNNING_NODE=$(docker-machine ip codesketch-swarm-node-0${i})
+	if [ "${RUNNING_NODE}" == "" ]; then
+		echo " * creating docker swarm node ${i}"
+		docker-machine create \
+			-d virtualbox \
+			--virtualbox-disk-size "${NODE_DISK_SIZE}" \
+			--virtualbox-memory "${NODE_MEMORY}" \
+			--swarm \
+			--swarm-discovery="consul://${CONSUL}" \
+			--engine-opt="cluster-store=consul://${CONSUL}" \
+			--engine-opt="cluster-advertise=eth1:2376" \
+			--engine-insecure-registry "${SERVER_NAME}" \
+			--virtualbox-host-dns-resolver \
+			codesketch-swarm-node-0${i}
+	else
+		echo " * found codesketch swarm node ${i} at ${RUNNING_NODE}"
+	fi
+done
+
+echo "* uploading resources on swarm master"
+docker-machine scp swarm/configure codesketch-swarm-master:/tmp
+docker-machine scp nginx/certs/codesketch.crt codesketch-swarm-master:/tmp
+echo "* configure swarm master"
+docker-machine ssh codesketch-swarm-master sudo sh /tmp/configure
+for i in $(seq 1 ${NODES}); do
+	echo "* uploading resources on swarm master"
+	docker-machine scp swarm/configure codesketch-swarm-node-0${i}:/tmp
+	docker-machine scp nginx/certs/codesketch.crt codesketch-swarm-node-0${i}:/tmp
+	echo "* configure swarm master"
+	docker-machine ssh codesketch-swarm-node-0${i} sudo sh /tmp/configure
+done
+eval $(docker-machine env --swarm codesketch-swarm-master)
+docker network create --driver overlay --subnet=10.0.9.0/24 codesketch
+echo " * docker swarm created ..."

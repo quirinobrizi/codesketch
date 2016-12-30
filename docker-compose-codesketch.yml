@@ -199,9 +199,9 @@ volumes:
     driver: local
   postgresql-data:
     driver: local
-  gitlab-config:
-    driver: local
-  gitlab-data:
-    driver: local
-  gitlab-logs:
-    driver: local
+  # gitlab-config:
+  #   driver: local
+  # gitlab-data:
+  #   driver: local
+  # gitlab-logs:
+  #   driver: local

@@ -6,6 +6,4 @@ echo "* configuring sonarqube LDAP"
 	sed -e "s/%{dc}/$dc/" \
 		/templates/sonar.tpl.properties > /opt/sonarqube/conf/sonar.properties
 
-cat /opt/sonarqube/conf/sonar.properties
-
 $SONARQUBE_HOME/bin/run.sh

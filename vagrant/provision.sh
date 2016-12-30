@@ -24,7 +24,7 @@ mkswap  /swapfile
 swapon  /swapfile
 
 echo "* Install codesketch"
-wget https://github.com/quirinobrizi/codesketch/archive/${CS_RELEASE}.tar.gz
+wget https://github.com/quirinobrizi/codesketch/archive/v${CS_RELEASE}.tar.gz
 tar -xzf ${CS_RELEASE}.tar.gz
 mv codesketch-${CS_RELEASE} codesketch
 cd  codesketch

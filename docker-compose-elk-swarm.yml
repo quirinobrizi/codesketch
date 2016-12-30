@@ -1,0 +1,9 @@
+version: "2"
+
+services:
+  elasticsearch:
+    environment:
+      - "constraint:node==codesketch-swarm-master"
+  logstash:
+    environment:
+      - "constraint:node==codesketch-swarm-master"

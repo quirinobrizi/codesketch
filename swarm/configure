@@ -1,0 +1,16 @@
+#!/bin/sh
+
+# Configure the swarm instance
+
+echo "vm.max_map_count=262144" >> /etc/sysctl.conf 
+echo "kernel.sem=250 32000 100 128" >> /etc/sysctl.conf
+echo "kernel.shmall=2097152" >> /etc/sysctl.conf
+echo "kernel.shmmax=2147483648" >> /etc/sysctl.conf
+echo "kernel.shmmni=4096" >> /etc/sysctl.conf
+echo "fs.file-max=65536" >> /etc/sysctl.conf
+echo "vm.swappiness=0" >> /etc/sysctl.conf
+echo "vm.vfs_cache_pressure=50" >> /etc/sysctl.conf
+sysctl -p
+mkdir -p /etc/docker/certs.d/
+mv /tmp/codesketch.crt /etc/docker/certs.d/
+/etc/init.d/docker restart

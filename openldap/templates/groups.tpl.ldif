@@ -23,8 +23,8 @@ memberuid: codesketch
 objectclass: posixGroup
 objectclass: top
 
-# Entry 3: cn=developers,ou=groups,%{ldap_domain}
-dn: cn=developers,ou=groups,%{ldap_domain}
+# Entry 3: cn=sonar-administrators,ou=groups,%{ldap_domain}
+dn: cn=sonar-administrators,ou=groups,%{ldap_domain}
 cn: sonar-administrators
 gidnumber: 503
 memberuid: codesketch
@@ -38,8 +38,8 @@ gidnumber: 501
 objectclass: posixGroup
 objectclass: top
 
-# Entry 5: cn=developers,ou=groups,%{ldap_domain}
-dn: cn=developers,ou=groups,%{ldap_domain}
+# Entry 5: cn=sonar-users,ou=groups,%{ldap_domain}
+dn: cn=sonar-users,ou=groups,%{ldap_domain}
 cn: sonar-users
 gidnumber: 504
 objectclass: posixGroup

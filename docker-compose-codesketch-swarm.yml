@@ -1,0 +1,15 @@
+version: "2"
+
+services:
+  jenkins-master:
+    environment:
+      - "constraint:node==codesketch-swarm-node-01"
+  artifactory:
+    environment:
+      - "constraint:node==codesketch-swarm-node-01"
+  registry:
+    environment:
+      - "constraint:node==codesketch-swarm-node-01"
+  postgresql:
+    environment:
+      - "constraint:node==codesketch-swarm-node-01"
