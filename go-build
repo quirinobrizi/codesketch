@@ -1,0 +1,6 @@
+#!/bin/bash
+
+GOPATH=$(pwd) GOBIN=$(pwd)/bin go build codesketch
+
+rm -f ./bin/codesketch
+mv codesketch ./bin

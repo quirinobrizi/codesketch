@@ -1,0 +1,4 @@
+#!/bin/bash
+
+GOPATH=$(pwd)
+GOBIN=$(pwd)/bin

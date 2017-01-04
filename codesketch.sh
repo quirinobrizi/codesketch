@@ -49,7 +49,7 @@ function configure {
     fi
 
     if [ "${swarm}" == "1" ]; then
-    	echo " * creating swarm 2 - ${consul} - ${server_name}"
+    	echo " * creating swarm 2 - ${server_name}"
     	bash swarm/setup-${swarm_provider} 2 ${server_name}
     	[ "$?" != "0" ] && exit 1
     	eval $(docker-machine env --swarm codesketch-swarm-master)
@@ -78,8 +78,7 @@ function configure {
 	echo "JENKINS_LDAP_BASEDN=${dc}" >> environment
 	echo "JENKINS_LDAP_MANAGER_DN=cn=admin,${dc}" >> environment
 	echo "JENKINS_LDAP_MANAGER_PASSWORD=${LDAP_ADMIN_PASSWORD}" >> environment
-	echo "LOGSTASH_HOST=$(hostname)" >> environment
-
+	
 	echo "* creating .env file"
 	touch .env
 	echo "SERVER_NAME=${server_name}" >> .env
@@ -111,7 +110,7 @@ function configure {
 	docker cp ./openldap/bootstrap/ldif/codesketch.ldif openldap:/codesketch.ldif 
 	docker-compose ${compose_files} exec openldap ldapadd -c -x -D "cn=admin,${dc}" -w ${LDAP_ADMIN_PASSWORD} -f /groups.ldif -h openldap
 	docker-compose ${compose_files} exec openldap ldapadd -c -x -D "cn=admin,${dc}" -w ${LDAP_ADMIN_PASSWORD} -f /codesketch.ldif -h openldap
-	#docker-compose ${compose_files} stop openldap
+	docker-compose ${compose_files} stop openldap
 	echo "* default user configuration completed."
 
 	touch $CONTROL_FILE
